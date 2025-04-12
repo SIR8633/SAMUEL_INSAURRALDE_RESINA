@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portafolio - SIR - Soluciones Integrales y Resultados</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <header>
+        <nav>
+            <div class="logo">
+                <a href="index.html"><img src="img/logo/logo.png" alt="SIR - Soluciones Integrales y Resultados"></a>
+            </div>
+            <ul>
+                <li><a href="index.html" class="active">Inicio</a></li>
+                <li><a href="acerca.html">Mi Experiencia y Habilidades</a></li>
+                <li><a href="portafolio.html">Portafolio</a></li>
+                <li><a href="contacto.html">Contacto</a></li>
+            </ul>
+        </nav>
+    </header>
+
+
+    <main>
+        <section class="portafolio">
+            <h1>Resultados Visualizados: Nuestro Portafolio de Dashboards Inteligentes</h1>
+            <p class="subtitulo">Explora una selección de nuestros proyectos en Power BI, Looker Studio y Power Pivot, diseñados para ofrecer insights accionables en diversas áreas de negocio.</p>
+
+            <div class="tabs">
+                <button class="tab-button active" onclick="showTab('powerbi')">Power BI</button>
+                <button class="tab-button" onclick="showTab('lookerstudio')">Looker Studio</button>
+                <button class="tab-button" onclick="showTab('powerpivot')">Power Pivot</button>
+            </div>
+
+            <div id="powerbi" class="tab-content active">
+                <div class="proyecto">
+                    <h3>Dashboard Estratégico para Dirección</h3>
+                    <img src="img/portafolio/powerbi/proyecto1-1.jpg" alt="Dashboard Power BI">
+                    <p>Desarrollo de un dashboard estratégico en Power BI para la alta dirección, consolidando métricas de diversas áreas (Ventas, Operaciones, Marketing) para facilitar la toma de decisiones a nivel ejecutivo.</p>
+                </div>
+                <div class="proyecto">
+                    <h3>Análisis de Métricas de Contact Center</h3>
+                    <img src="img/portafolio/powerbi/proyecto1-2.jpg" alt="Dashboard Power BI Contact Center">
+                    <p>Creación de un dashboard en Power BI para el análisis detallado de las métricas clave de un contact center, permitiendo identificar áreas de mejora en la eficiencia operativa y la satisfacción del cliente.</p>
+                </div>
+            </div>
+
+            <div id="lookerstudio" class="tab-content">
+                <div class="proyecto">
+                    <h3>Análisis del Comportamiento del Usuario Web</h3>
+                    <img src="img/portafolio/lookerstudio/proyecto2-1.jpg" alt="Dashboard Looker Studio">
+                    <p>Desarrollo de un dashboard en Looker Studio para analizar el comportamiento de los usuarios en plataformas web, identificando patrones de navegación y oportunidades para optimizar la experiencia.</p>
+                </div>
+            </div>
+
+            <div id="powerpivot" class="tab-content">
+                <div class="proyecto">
+                    <h3>Modelo de Datos para Análisis Financiero</h3>
+                    <img src="img/portafolio/powerpivot/proyecto3-1.jpg" alt="Informe Power Pivot">
+                    <p>Construcción de un modelo de datos robusto utilizando Power Pivot en Excel para realizar análisis financieros complejos, incluyendo análisis de rentabilidad y proyecciones.</p>
+                </div>
+            </div>
+
+            <div class="llamada-accion">
+                <p>¿Interesado en una solución de visualización de datos a medida para tu contact center o cualquier otra área de tu negocio? ¡Contáctanos para discutir tus necesidades!</p>
+                <a href="contacto.html" class="boton">Solicita una Consulta Gratuita</a>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 SIR - Soluciones Integrales y Resultados</p>
+    </footer>
+
+    <script src="js/script.js"></script>
+    <script>
+        function showTab(tabId) {
+            const tabs = document.querySelectorAll('.tab-content');
+            const buttons = document.querySelectorAll('.tab-button');
+
+            tabs.forEach(tab => tab.classList.remove('active'));
+            buttons.forEach(button => button.classList.remove('active'));
+
+            document.getElementById(tabId).classList.add('active');
+            document.querySelector(`.tab-button[onclick="showTab('${tabId}')"]`).classList.add('active');
+        }
+    </script>
+</body>
+</html>
