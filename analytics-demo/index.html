@@ -76,7 +76,17 @@
       <div id="chartContainer">Aquí se mostrará el gráfico interactivo (Plotly.js).</div>
       <div class="descriptive-summary" id="descriptiveSummary">
         <p><span class="icon">📝</span> <strong>Resumen:</strong> (Este es un resumen descriptivo básico generado automáticamente.)</p>
-      </div>
+      <div class="premium-ai-summary" style="margin-top: 25px; margin-bottom: 25px; padding: 15px; background-color: #f0f8ff; border: 1px solid #add8e6; border-radius: 6px; text-align: center;">
+      <button id="getAISummaryButton" class="premium-button" style="background-color: #ffc107; color: #333; border: none; padding: 10px 15px; font-size: 0.95em; border-radius: 5px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        ✨ Obtener Análisis Detallado con IA (Muestra Premium)
+      </button>
+      <div id="aiSummaryResultContainer" style="margin-top: 15px; padding: 10px; background-color: #ffffff; border: 1px dashed #ccc; border-radius: 4px; display: none; text-align: left;">
+        <p id="aiSummaryText" style="margin: 0; font-style: italic; color: #555;">Generando análisis avanzado...</p>
+        <p id="aiSummaryCTA" style="margin-top: 10px; font-size: 0.9em;">
+            Este es solo un vistazo del poder de la IA. ¿Quieres descubrir insights más profundos y personalizados?
+            <a href="../contacto.html" style="color: #007bff; text-decoration: underline;">Ponte en contacto con nosotros</a> para explorar el valor completo.
+        </p>
+    </div>
 
       <div id="dataTableContainer" class="data-table-container">
         </div>
