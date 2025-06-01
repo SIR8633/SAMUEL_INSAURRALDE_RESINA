@@ -1,0 +1,412 @@
+/* Estilos Generales */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  margin: 0; 
+  background-color: #f4f7f6;
+  color: #333;
+}
+main { 
+  padding: 20px 30px; 
+}
+
+/* Encabezado */
+.app-header {
+  background-color: #ffffff; 
+  padding: 15px 30px; 
+  display: flex;
+  justify-content: space-between; 
+  align-items: center; 
+  border-bottom: 1px solid #e0e0e0;
+}
+.header-logo a { 
+  text-decoration: none; 
+  color: #2c3e50; 
+  font-size: 1.6em; 
+  font-weight: 600; 
+}
+.header-motto { 
+  font-size: 0.95em; 
+  color: #555; 
+  font-style: italic; 
+}
+
+/* Sección de Carga de Datos */
+.data-upload-section {
+  background-color: #ffffff; 
+  padding: 40px 30px; 
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); 
+  max-width: 600px; 
+  margin: 40px auto; 
+  text-align: center;
+}
+.data-upload-section h2 { 
+  font-size: 1.8em; 
+  color: #333; 
+  margin-bottom: 20px; 
+}
+.upload-area .upload-button {
+  background-color: #5cb85c; 
+  color: white; 
+  padding: 15px 30px; 
+  font-size: 1.1em;
+  border: none; 
+  border-radius: 5px; 
+  cursor: pointer; 
+  transition: background-color 0.3s ease; 
+  margin-bottom: 15px;
+}
+.upload-area .upload-button:hover { 
+  background-color: #4cae4c; 
+}
+.upload-area .upload-button-icon { 
+  margin-right: 8px; 
+}
+.upload-area .formats-note { 
+  font-size: 0.9em; 
+  color: #666; 
+  margin-bottom: 20px; 
+}
+.upload-area .privacy-note { 
+  font-size: 0.85em; 
+  color: #777; 
+  margin-top: 25px; 
+}
+.hidden-file-input { 
+  display: none; 
+}
+.file-loaded-status {
+  margin-top: 30px; 
+  padding: 15px; 
+  background-color: #e9f5e9;
+  border: 1px solid #c8e6c9; 
+  border-radius: 5px; 
+  display: none; 
+}
+.file-loaded-status p { 
+  margin: 0 0 10px 0; 
+  color: #38761d; 
+  font-weight: 500; 
+}
+.file-loaded-status .change-file-button {
+  background-color: #f0ad4e; 
+  color: white; 
+  padding: 8px 15px; 
+  font-size: 0.9em;
+  border: none; 
+  border-radius: 5px; 
+  cursor: pointer;
+}
+.file-loaded-status .change-file-button:hover { 
+  background-color: #ec971f; 
+}
+
+/* Sección de Definición de Análisis */
+.analysis-definition-section {
+  background-color: #ffffff; 
+  padding: 30px; 
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); 
+  max-width: 700px; 
+  margin: 40px auto;
+  display: none; /* Oculta por defecto */
+}
+.analysis-definition-section h2 {
+  font-size: 1.8em; 
+  color: #333; 
+  margin-bottom: 25px; 
+  text-align: center;
+}
+.smart-suggestion-box {
+  background-color: #e6f7ff; 
+  border: 1px solid #91d5ff; 
+  border-radius: 6px;
+  padding: 20px; 
+  margin-bottom: 30px;
+}
+.smart-suggestion-box p { 
+  margin-top: 0; 
+  margin-bottom: 15px; 
+  font-size: 1.05em; 
+}
+.smart-suggestion-box .icon { 
+  font-size: 1.2em; 
+  margin-right: 8px; 
+}
+.smart-suggestion-box button {
+  padding: 8px 15px; 
+  border-radius: 4px; 
+  cursor: pointer;
+  border: 1px solid transparent; 
+  margin-right: 10px;
+}
+.smart-suggestion-box #useSuggestionButton { 
+  background-color: #52c41a; 
+  color: white; 
+  border-color: #52c41a;
+}
+.smart-suggestion-box #manualConfigButton { 
+  background-color: #f0f2f5; 
+  color: #333; 
+  border-color: #d9d9d9;
+}
+.manual-config-form { 
+  margin-top: 20px; 
+}
+.manual-config-form .form-group { 
+  margin-bottom: 20px; 
+}
+.manual-config-form label { 
+  display: block; 
+  margin-bottom: 6px; 
+  font-weight: 500; 
+  color: #444; 
+}
+.manual-config-form select, 
+.manual-config-form input[type="text"] {
+  width: 100%; 
+  padding: 10px; 
+  border: 1px solid #ccc; 
+  border-radius: 4px;
+  box-sizing: border-box; 
+  font-size: 1em;
+}
+
+/* Estilos para la Sección de Filtros */
+.filters-area {
+  margin-top: 25px;
+  padding-top: 20px;
+  border-top: 1px dashed #e0e0e0;
+}
+.filters-area > label { 
+  display: block;
+  margin-bottom: 10px;
+  font-weight: 500; 
+  color: #444; 
+}
+.filter-control-button { 
+  background-color: #e0e0e0;
+  color: #333;
+  border: 1px solid #ccc;
+  padding: 8px 12px;
+  font-size: 0.9em;
+  margin-bottom: 15px;
+  border-radius: 4px; 
+  cursor: pointer; 
+}
+.filter-control-button:hover {
+  background-color: #d0d0d0;
+}
+#activeFiltersContainer .filter-row {
+  display: flex;
+  gap: 10px; 
+  align-items: center;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 4px;
+  background-color: #f9f9f9;
+  border: 1px solid #eee;
+}
+#activeFiltersContainer .filter-row select,
+#activeFiltersContainer .filter-row input[type="text"],
+#activeFiltersContainer .filter-row .filter-value-select { 
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  font-size: 0.95em;
+  box-sizing: border-box; 
+}
+#activeFiltersContainer .filter-row select,
+#activeFiltersContainer .filter-row .filter-value-select {
+  min-width: 150px; 
+}
+#activeFiltersContainer .filter-row input[type="text"] { 
+  flex-grow: 1; 
+}
+#activeFiltersContainer .filter-row .filter-value-min,
+#activeFiltersContainer .filter-row .filter-value-max { 
+    width: calc(50% - 5px); 
+}
+#activeFiltersContainer .filter-row .remove-filter-button {
+  background-color: #ff6b6b; 
+  color: white;
+  border: none;
+  padding: 8px 10px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 0.9em;
+}
+#activeFiltersContainer .filter-row .remove-filter-button:hover {
+  background-color: #e05252;
+}
+
+.manual-config-form .generate-button {
+  background-color: #007bff; 
+  color: white; 
+  border-color: #007bff;
+  display: block; 
+  width: 100%; 
+  margin-top: 30px; 
+  font-size: 1.1em; 
+  font-weight: bold;
+  padding: 10px 18px; 
+  border-radius: 4px; 
+  cursor: pointer; 
+}
+.manual-config-form .generate-button:hover { 
+  background-color: #0056b3; 
+}
+
+/* Sección de Dashboard y Resultados */
+.dashboard-results-section {
+  background-color: #ffffff; 
+  padding: 30px; 
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); 
+  max-width: 900px; 
+  margin: 40px auto;
+  display: none; /* Oculta por defecto */
+  overflow-x: auto; 
+}
+.dashboard-results-section h2 {
+  font-size: 1.8em; 
+  color: #333; 
+  margin-bottom: 10px; 
+  text-align: center;
+}
+.dashboard-results-section .filename-subtitle {
+  text-align: center; 
+  font-size: 0.95em; 
+  color: #555; 
+  margin-bottom: 30px;
+}
+#chartContainer {
+  width: 100%; 
+  min-height: 400px;
+  height: auto; 
+  border: 1px dashed #ccc; 
+  display: flex;
+  align-items: center; 
+  justify-content: center; 
+  font-size: 1.1em; 
+  color: #777;
+  background-color: #f9f9f9; 
+  margin-bottom: 30px; 
+  border-radius: 6px;
+  box-sizing: border-box; 
+}
+.descriptive-summary {
+  background-color: #f8f9fa; 
+  border: 1px solid #e9ecef; 
+  border-radius: 6px;
+  padding: 20px; 
+  margin-bottom: 30px;
+}
+.descriptive-summary .icon { 
+  font-size: 1.2em; 
+  margin-right: 8px; 
+}
+.descriptive-summary p { 
+  margin:0; 
+  font-size: 1.0em; 
+  line-height: 1.6; 
+}
+
+/* Estilos para la Tabla de Datos */
+.data-table-container {
+  width: 100%;
+  max-height: 400px; 
+  overflow: auto;   
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  margin-top: 30px; 
+  margin-bottom: 30px; 
+}
+.data-table-container table {
+  width: 100%;
+  border-collapse: collapse; 
+  font-size: 0.9em;
+}
+.data-table-container th,
+.data-table-container td {
+  border: 1px solid #e0e0e0;
+  padding: 8px 10px;
+  text-align: left;
+  white-space: nowrap; 
+}
+.data-table-container th {
+  background-color: #f0f2f5;
+  font-weight: 600;
+  position: sticky; 
+  top: 0;
+  z-index: 1; 
+}
+.data-table-container tbody tr:nth-child(even) {
+  background-color: #f9f9f9; 
+}
+.data-table-container tbody tr:hover {
+  background-color: #eef2ff; 
+}
+
+.dashboard-options {
+  display: flex; 
+  justify-content: center; 
+  gap: 15px; 
+  margin-bottom: 30px;
+  padding-bottom: 20px; 
+  border-bottom: 1px solid #eee;
+  align-items: center; 
+}
+.dashboard-options button {
+  padding: 10px 20px; 
+  font-size: 0.95em; 
+  border-radius: 5px; 
+  cursor: pointer;
+  border: 1px solid #007bff; 
+  background-color: #007bff; 
+  color: white;
+}
+.dashboard-options button:hover { 
+  background-color: #0056b3; 
+}
+.dashboard-options .secondary-action {
+  background-color: #6c757d; 
+  border-color: #6c757d;
+}
+.dashboard-options .secondary-action:hover { 
+  background-color: #5a6268; 
+}
+.checkbox-label { 
+  margin-left: 20px;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: 0.95em; 
+  color: #333; 
+}
+
+.premium-incentive {
+  text-align: center; 
+  padding: 15px; 
+  background-color: #fffbe6;
+  border: 1px solid #ffe58f; 
+  border-radius: 4px; 
+  margin-bottom: 30px; 
+  font-size: 0.9em;
+}
+.new-analysis-button-container { 
+  text-align: center; 
+}
+.new-analysis-button-container button {
+  padding: 12px 25px; 
+  font-size: 1.05em; 
+  border-radius: 5px; 
+  cursor: pointer;
+  background-color: #28a745; 
+  color: white; 
+  border: 1px solid #28a745; 
+  font-weight: bold;
+}
+.new-analysis-button-container button:hover { 
+  background-color: #218838; 
+}

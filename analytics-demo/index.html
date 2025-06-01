@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SIR - Analytics</title>
+  <script src="https://cdn.plot.ly/plotly-2.32.0.min.js" charset="utf-8"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <header class="app-header">
+    <div class="header-logo"><a href="#">SIR - Analytics</a></div>
+    <div class="header-motto"><p>Tus datos, tus insights, al instante.</p></div>
+  </header>
+
+  <main>
+    <section class="data-upload-section" id="dataUploadSection">
+      <h2>Analiza tus Datos en Segundos</h2>
+      <div class="upload-area">
+        <input type="file" id="fileInput" class="hidden-file-input" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
+        <button class="upload-button" id="selectFileButton"><span class="upload-button-icon">📤</span> Seleccionar Archivo</button>
+        <p class="formats-note">(Formatos: CSV, XLS, XLSX)</p>
+        <p class="privacy-note">No almacenamos tus datos. Todo el análisis se realiza en tu sesión actual.</p>
+      </div>
+      <div class="file-loaded-status" id="fileLoadedStatus">
+        <p>Archivo cargado: <strong id="fileNameDisplay"></strong></p>
+        <button class="change-file-button" id="changeFileButton">Cambiar Archivo</button>
+      </div>
+    </section>
+
+    <section class="analysis-definition-section" id="analysisDefinitionSection">
+      <h2>Paso 2: Configura tu Análisis</h2>
+      <div class="smart-suggestion-box" id="smartSuggestionBox">
+        <p id="smartSuggestionText"><span class="icon">💡</span> <strong>Sugerencia:</strong> (Esperando datos del archivo para generar sugerencia...)</p>
+        <button id="useSuggestionButton">Sí, usar sugerencia</button>
+        <button id="manualConfigButton">No, configurar manualmente</button>
+      </div>
+      <form id="manualAnalysisForm" class="manual-config-form" style="display: none;">
+        <div class="form-group">
+          <label for="analysisType">Tipo de Análisis:</label>
+          <select id="analysisType" name="analysisType">
+            <option value="">-- Selecciona un tipo --</option>
+            <option value="trend">Tendencia (Gráfico de Líneas)</option>
+            <option value="comparison">Comparación por Categoría (Gráfico de Barras)</option>
+            <option value="distribution">Distribución de Datos (Histograma)</option>
+          </select>
+        </div>
+        <div id="dynamicAnalysisFieldsContainer">
+          <div class="axis-selector" id="trendFields" style="display:none;">
+            <div class="form-group"><label for="xAxisTrend">Eje X (Tiempo/Secuencia):</label><select class="column-selector" id="xAxisTrend" name="xAxisTrend"><option value="">-- Selecciona columna --</option></select></div>
+            <div class="form-group"><label for="yAxisTrend">Eje Y (Valores):</label><select class="column-selector" id="yAxisTrend" name="yAxisTrend"><option value="">-- Selecciona columna --</option></select></div>
+          </div>
+          <div class="axis-selector" id="comparisonFields" style="display:none;">
+            <div class="form-group"><label for="categoryAxisComparison">Eje de Categorías:</label><select class="column-selector" id="categoryAxisComparison" name="categoryAxisComparison"><option value="">-- Selecciona columna --</option></select></div>
+            <div class="form-group"><label for="valueAxisComparison">Eje de Valores:</label><select class="column-selector" id="valueAxisComparison" name="valueAxisComparison"><option value="">-- Selecciona columna --</option></select></div>
+          </div>
+          <div class="axis-selector" id="distributionFields" style="display:none;">
+            <div class="form-group"><label for="dataColumnDistribution">Columna de Datos para Distribuir:</label><select class="column-selector" id="dataColumnDistribution" name="dataColumnDistribution"><option value="">-- Selecciona columna --</option></select></div>
+          </div>
+        </div>
+        <div class="filters-area">
+          <label>Filtros Simples (Opcional):</label>
+          <button type="button" id="addFilterButton" class="filter-control-button">[+] Añadir filtro</button>
+          <div id="activeFiltersContainer">
+          </div>
+        </div>
+        <button type="submit" class="generate-button" id="generateAnalysisButton">📊 Generar Análisis</button>
+      </form>
+    </section>
+
+    <section class="dashboard-results-section" id="dashboardResultsSection">
+      <h2>Resultado de tu Análisis</h2>
+      <p class="filename-subtitle">Para el archivo: <strong id="dashboardFileName"></strong></p>
+      <div id="chartContainer">Aquí se mostrará el gráfico interactivo (Plotly.js).</div>
+      <div class="descriptive-summary" id="descriptiveSummary">
+        <p><span class="icon">📝</span> <strong>Resumen:</strong> (Este es un resumen descriptivo básico generado automáticamente.)</p>
+      </div>
+
+      <div id="dataTableContainer" class="data-table-container">
+        </div>
+
+      <div class="dashboard-options">
+        <button id="downloadChartButton">Descargar Gráfico (PNG)</button>
+        <button id="downloadDataButton" class="secondary-action">Descargar Datos (CSV)</button>
+        <label class="checkbox-label" for="toggleDataLabelsCheckbox">
+          <input type="checkbox" id="toggleDataLabelsCheckbox" style="margin-right: 5px;">
+          Mostrar valores en gráfico
+        </label>
+      </div>
+
+      <div class="premium-incentive">
+        <p>✨ ¿Te gustaría hacer preguntas directas a tus datos en lenguaje natural y obtener insights más profundos? ¡Descubre las posibilidades con <strong>SIR - Analytics Premium</strong> (próximamente)!</p>
+      </div>
+      <div class="new-analysis-button-container">
+        <button id="performNewAnalysisButton">↩️ Realizar Otro Análisis</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
