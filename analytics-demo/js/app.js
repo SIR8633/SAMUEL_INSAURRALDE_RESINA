@@ -5,8 +5,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let currentFileName = '';
     let availableHeaders = [];
-    let parsedCsvData = []; 
-    let lastChartConfig = null; 
+    let parsedCsvData = [];
+    let lastChartConfig = null;
     let currentSmartSuggestion = null;
     let inferredColumnTypes = {};
     let currentSortColumnKey = null;
@@ -22,12 +22,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const changeFileButton = document.getElementById('changeFileButton');
     const analysisDefinitionSection = document.getElementById('analysisDefinitionSection');
     const smartSuggestionBox = document.getElementById('smartSuggestionBox');
-    const smartSuggestionText = document.getElementById('smartSuggestionText'); 
-    const useSuggestionButton = document.getElementById('useSuggestionButton'); 
+    const smartSuggestionText = document.getElementById('smartSuggestionText');
+    const useSuggestionButton = document.getElementById('useSuggestionButton');
     const manualConfigButton = document.getElementById('manualConfigButton');
     const manualAnalysisForm = document.getElementById('manualAnalysisForm');
-    const analysisTypeSelect = document.getElementById('analysisType'); 
-    const columnSelectors = document.querySelectorAll('.column-selector'); 
+    const analysisTypeSelect = document.getElementById('analysisType');
+    const columnSelectors = document.querySelectorAll('.column-selector');
     const trendFields = document.getElementById('trendFields');
     const comparisonFields = document.getElementById('comparisonFields');
     const distributionFields = document.getElementById('distributionFields');
@@ -35,25 +35,31 @@ document.addEventListener('DOMContentLoaded', () => {
     const dashboardResultsSection = document.getElementById('dashboardResultsSection');
     const dashboardFileName = document.getElementById('dashboardFileName');
     const chartContainer = document.getElementById('chartContainer'); // Importante
-    const descriptiveSummaryElement = document.querySelector('#descriptiveSummary p');
-    const dataTableContainer = document.getElementById('dataTableContainer'); 
+    const descriptiveSummaryElement = document.querySelector('#descriptiveSummary p'); // Ya lo tenías
+    const dataTableContainer = document.getElementById('dataTableContainer');
     const downloadChartButton = document.getElementById('downloadChartButton');
-    const toggleDataLabelsCheckbox = document.getElementById('toggleDataLabelsCheckbox'); 
+    const toggleDataLabelsCheckbox = document.getElementById('toggleDataLabelsCheckbox');
     const addFilterButton = document.getElementById('addFilterButton');
     const activeFiltersContainer = document.getElementById('activeFiltersContainer');
     const downloadDataButton = document.getElementById('downloadDataButton');
     const performNewAnalysisButton = document.getElementById('performNewAnalysisButton');
-    
+
+    // Nuevas referencias para la funcionalidad de IA
+    const getAISummaryButton = document.getElementById('getAISummaryButton');
+    const aiSummaryResultContainer = document.getElementById('aiSummaryResultContainer');
+    const aiSummaryTextElement = document.getElementById('aiSummaryText');
+
     // --- INICIO DE DEFINICIÓN DE FUNCIONES ---
-    // (Todas las funciones: filterConditions, parseCSVText, parseExcelData, inferColumnTypes, 
-    //  populateColumnSelectors, resetColumnSelectors, updateSmartSuggestion, 
-    //  generateDescriptiveSummary, resetFileSelection, displayDynamicFields, 
-    //  updateFilterValueElement, collectFilterDefinitions, applyAllFilters, 
-    //  displayDataTable, populateTableBody, sortTableByColumn, 
-    //  resetApplicationStateBeforeNewFile, resetToUploadView 
+    // (Todas las funciones: filterConditions, parseCSVText, parseExcelData, inferColumnTypes,
+    //  populateColumnSelectors, resetColumnSelectors, updateSmartSuggestion,
+    //  generateDescriptiveSummary, resetFileSelection, displayDynamicFields,
+    //  updateFilterValueElement, collectFilterDefinitions, applyAllFilters,
+    //  displayDataTable, populateTableBody, sortTableByColumn,
+    //  resetApplicationStateBeforeNewFile, resetToUploadView
     //  PERMANECEN IGUAL QUE EN LA ÚLTIMA VERSIÓN COMPLETA,
     //  EXCEPTO renderOrUpdateChart que es la que se modifica abajo)
-    const filterConditions = [ 
+
+    const filterConditions = [
         { value: 'equals', text: 'Es igual a (=)' }, { value: 'not_equals', text: 'No es igual a (≠)' },
         { value: 'contains', text: 'Contiene' }, { value: 'not_contains', text: 'No contiene' },
         { value: 'greater_than', text: 'Mayor que (>)' }, { value: 'less_than', text: 'Menor que (<)' },
@@ -61,26 +67,27 @@ document.addEventListener('DOMContentLoaded', () => {
         { value: 'between', text: 'Está entre' },
         { value: 'is_empty', text: 'Está vacío' }, { value: 'is_not_empty', text: 'No está vacío' }
     ];
-    function parseCSVText(csvText) { /* ... (código completo de la función) ... */ 
+
+    function parseCSVText(csvText) { /* ... (código completo de la función que me proporcionaste) ... */
         if (!csvText) return { headers: [], data: [] };
-        const lines = csvText.trim().split(/\r\n|\n/); 
+        const lines = csvText.trim().split(/\r\n|\n/);
         if (lines.length === 0) return { headers: [], data: [] };
         const firstLine = lines[0];
-        let delimiter = ';'; 
+        let delimiter = ';';
         const commaCount = (firstLine.match(/,/g) || []).length;
         const semicolonCount = (firstLine.match(/;/g) || []).length;
         if (commaCount > 0 && commaCount > semicolonCount) {
             delimiter = ',';
         }
-        const rawHeaders = firstLine.split(delimiter).map(header => String(header || '').trim().replace(/^"|"$/g, '')); 
+        const rawHeaders = firstLine.split(delimiter).map(header => String(header || '').trim().replace(/^"|"$/g, ''));
         const data = [];
-        if (lines.length > 1) { 
+        if (lines.length > 1) {
             for (let i = 1; i < lines.length; i++) {
                 if (lines[i].trim() === '') { continue; }
-                const values = lines[i].split(delimiter); 
+                const values = lines[i].split(delimiter);
                 const rowObject = {};
                 for (let j = 0; j < rawHeaders.length; j++) {
-                    const headerKey = rawHeaders[j]; 
+                    const headerKey = rawHeaders[j];
                     rowObject[headerKey] = values[j] ? String(values[j]).trim().replace(/^"|"$/g, '') : '';
                 }
                 data.push(rowObject);
@@ -88,17 +95,18 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         return { headers: rawHeaders, data: data };
     }
-    function parseExcelData(arrayBuffer) { /* ... (código completo de la función) ... */ 
+
+    function parseExcelData(arrayBuffer) { /* ... (código completo de la función que me proporcionaste) ... */
         try {
             if (typeof XLSX === 'undefined') {
                 console.error("SheetJS (XLSX) no está definido. Asegúrate de que la librería esté cargada.");
                 alert('Error: La librería para procesar archivos Excel no está cargada.');
                 return { headers: [], data: [] };
             }
-            const workbook = XLSX.read(arrayBuffer, { type: 'array', cellDates: true }); 
+            const workbook = XLSX.read(arrayBuffer, { type: 'array', cellDates: true });
             const firstSheetName = workbook.SheetNames[0];
             const worksheet = workbook.Sheets[firstSheetName];
-            const aoaData = XLSX.utils.sheet_to_json(worksheet, { header: 1, raw: false, dateNF: 'yyyy-mm-dd' }); 
+            const aoaData = XLSX.utils.sheet_to_json(worksheet, { header: 1, raw: false, dateNF: 'yyyy-mm-dd' });
             if (!aoaData || aoaData.length === 0) return { headers: [], data: [] };
             const rawHeaders = aoaData[0].map(header => String(header || '').trim());
             const data = [];
@@ -123,26 +131,27 @@ document.addEventListener('DOMContentLoaded', () => {
             return { headers: rawHeaders, data: data };
         } catch (error) {
             console.error("Error en parseExcelData:", error);
-            throw error; 
+            throw error;
         }
     }
-    function inferColumnTypes(dataSample, headers) { /* ... (código completo de la función) ... */ 
+
+    function inferColumnTypes(dataSample, headers) { /* ... (código completo de la función que me proporcionaste) ... */
         const types = {};
-        const SAMPLES_TO_CHECK = Math.min(dataSample.length, 50); 
+        const SAMPLES_TO_CHECK = Math.min(dataSample.length, 50);
         if (SAMPLES_TO_CHECK === 0) {
-            if (headers && headers.length > 0) { 
+            if (headers && headers.length > 0) {
                 headers.forEach(header => { types[header] = 'text'; });
             }
             return types;
         }
-        if (headers && headers.length > 0) { 
+        if (headers && headers.length > 0) {
             headers.forEach(header => {
                 let numCount = 0; let dateCount = 0; let emptyCount = 0;
                 const uniqueValues = new Set();
                 for (let i = 0; i < SAMPLES_TO_CHECK; i++) {
-                    if(!dataSample[i]) { continue; } 
+                    if(!dataSample[i]) { continue; }
                     const value = dataSample[i][header];
-                    if (value === null || value === undefined || String(value).trim() === '') { emptyCount++; continue; } 
+                    if (value === null || value === undefined || String(value).trim() === '') { emptyCount++; continue; }
                     uniqueValues.add(String(value));
                     if (!isNaN(parseFloat(value)) && isFinite(value)) numCount++;
                     if (value instanceof Date && !isNaN(value.getTime())) {
@@ -152,7 +161,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 }
                 const nonEmptySamples = SAMPLES_TO_CHECK - emptyCount;
-                if (nonEmptySamples === 0) { types[header] = 'text_empty'; } 
+                if (nonEmptySamples === 0) { types[header] = 'text_empty'; }
                 else if (dateCount / nonEmptySamples > 0.7) types[header] = 'date';
                 else if (numCount / nonEmptySamples > 0.7) types[header] = 'numeric';
                 else if (uniqueValues.size / nonEmptySamples < 0.5 && uniqueValues.size <= 15) types[header] = 'categorical';
@@ -161,15 +170,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         return types;
     }
-    function populateColumnSelectors(headers) { /* ... (código completo de la función) ... */ 
+
+    function populateColumnSelectors(headers) { /* ... (código completo de la función que me proporcionaste) ... */
         if (!headers || headers.length === 0 || !columnSelectors) return;
         columnSelectors.forEach(select => {
-            if (select) { 
+            if (select) {
                 const firstOption = select.options[0];
-                select.innerHTML = ''; 
-                if (firstOption) select.appendChild(firstOption); 
+                select.innerHTML = '';
+                if (firstOption) select.appendChild(firstOption);
                 headers.forEach(header => {
-                    if (header) { 
+                    if (header) {
                         const option = document.createElement('option');
                         option.value = header;
                         option.textContent = header;
@@ -179,20 +189,22 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-    function resetColumnSelectors() { /* ... (código completo de la función) ... */ 
+
+    function resetColumnSelectors() { /* ... (código completo de la función que me proporcionaste) ... */
         if (!columnSelectors) return;
         columnSelectors.forEach(select => {
-            if (select && select.options[0]) { 
+            if (select && select.options[0]) {
                 const firstOption = select.options[0];
-                select.innerHTML = ''; 
+                select.innerHTML = '';
                 select.appendChild(firstOption);
                 firstOption.selected = true;
             }
         });
     }
-    function updateSmartSuggestion(headers, columnTypes) { /* ... (código completo de la función) ... */ 
-        currentSmartSuggestion = null; 
-        if (!smartSuggestionText) return; 
+
+    function updateSmartSuggestion(headers, columnTypes) { /* ... (código completo de la función que me proporcionaste) ... */
+        currentSmartSuggestion = null;
+        if (!smartSuggestionText) return;
         if (!headers || headers.length === 0 || !columnTypes || Object.keys(columnTypes).length === 0) {
             smartSuggestionText.innerHTML = `<span class="icon">💡</span> <strong>Sugerencia:</strong> (No hay datos o encabezados para generar una sugerencia.)`;
             return;
@@ -202,12 +214,12 @@ document.addEventListener('DOMContentLoaded', () => {
         let potentialCategoricalCols = headers.filter(h => columnTypes[h] === 'categorical');
         let suggestionMade = false;
         if (potentialDateCols.length > 0 && potentialNumericCols.length > 0) {
-            const dateCol = potentialDateCols[0]; 
-            const numCol = potentialNumericCols.find(nc => nc !== dateCol) || potentialNumericCols[0]; 
+            const dateCol = potentialDateCols[0];
+            const numCol = potentialNumericCols.find(nc => nc !== dateCol) || potentialNumericCols[0];
             currentSmartSuggestion = { type: 'trend', xCol: dateCol, yCol: numCol };
             smartSuggestionText.innerHTML = `<span class="icon">💡</span> <strong>Sugerencia:</strong> Podrías analizar la <strong>'Tendencia de '${numCol}'</strong> usando <strong>'${dateCol}'</strong>. <br><small><em>(Considera explorar agrupaciones por mes o año para más detalle)</em></small>. ¿Usar esta sugerencia?`;
             suggestionMade = true;
-        } 
+        }
         else if (potentialCategoricalCols.length > 0 && potentialNumericCols.length > 0) {
             const catCol = potentialCategoricalCols[0];
             const numCol = potentialNumericCols.find(nc => nc !== catCol) || potentialNumericCols[0];
@@ -233,15 +245,16 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     }
-    function generateDescriptiveSummary(type, xVals, yVals, xColName, yColName, catColName, valColName, distColName, dataSetForSummary) { /* ... (código completo de la función) ... */ 
-        let summary = "No se pudo generar un resumen detallado."; 
+
+    function generateDescriptiveSummary(type, xVals, yVals, xColName, yColName, catColName, valColName, distColName, dataSetForSummary) { /* ... (código completo de la función que me proporcionaste) ... */
+        let summary = "No se pudo generar un resumen detallado.";
         if (type === 'trend') {
             if (!yVals || yVals.length === 0) return "No hay datos Y para el resumen de tendencia.";
             let numericY = yVals.map(v => parseFloat(v)).filter(v => !isNaN(v));
             if (numericY.length === 0) return `La columna '${yColName}' no contiene datos numéricos para el resumen.`;
             let maxY = -Infinity, minY = Infinity;
             let maxXassociated = null, minXassociated = null;
-            for (let i = 0; i < yVals.length; i++) { 
+            for (let i = 0; i < yVals.length; i++) {
                 const currentY = parseFloat(yVals[i]);
                 if (!isNaN(currentY)) {
                     if (currentY > maxY) { maxY = currentY; maxXassociated = xVals[i]; }
@@ -261,11 +274,11 @@ document.addEventListener('DOMContentLoaded', () => {
             return summary;
         } else if (type === 'comparison') {
             if (!yVals || yVals.length === 0) return "No hay datos de valor para el resumen de comparación.";
-            let numericY = yVals.map(v => parseFloat(v)).filter(v => !isNaN(v)); 
+            let numericY = yVals.map(v => parseFloat(v)).filter(v => !isNaN(v));
             if (numericY.length === 0) return `La columna '${valColName}' no contiene datos numéricos para el resumen.`;
             let maxY = -Infinity, minY = Infinity;
             let maxCatAssociated = null, minCatAssociated = null;
-            for (let i = 0; i < numericY.length; i++) { 
+            for (let i = 0; i < numericY.length; i++) {
                 const currentY = numericY[i];
                 if (currentY > maxY) { maxY = currentY; maxCatAssociated = xVals[i]; }
                 if (currentY < minY) { minY = currentY; minCatAssociated = xVals[i]; }
@@ -286,28 +299,30 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         return "Resumen descriptivo no disponible para este tipo de análisis.";
     }
-    function resetFileSelection() { /* ... (código completo de la función) ... */ 
-        if(fileLoadedStatus) fileLoadedStatus.style.display = 'none'; 
+
+    function resetFileSelection() { /* ... (código completo de la función que me proporcionaste) ... */
+        if(fileLoadedStatus) fileLoadedStatus.style.display = 'none';
         currentFileName = '';
         if(fileNameDisplay) fileNameDisplay.textContent = '';
-        if(fileInput) fileInput.value = null; 
+        if(fileInput) fileInput.value = null;
         updateSmartSuggestion([], {});
     }
-    function displayDynamicFields() { /* ... (código completo de la función) ... */    
+
+    function displayDynamicFields() { /* ... (código completo de la función que me proporcionaste) ... */
         if(trendFields) trendFields.style.display = 'none';
         if(comparisonFields) comparisonFields.style.display = 'none';
         if(distributionFields) distributionFields.style.display = 'none';
-        
-        if (!analysisTypeSelect) return; 
+
+        if (!analysisTypeSelect) return;
         const selectedType = analysisTypeSelect.value;
 
         const checkboxLabel = toggleDataLabelsCheckbox ? toggleDataLabelsCheckbox.parentElement : null;
-        if (checkboxLabel) { 
+        if (checkboxLabel) {
             if (selectedType === 'distribution') {
-                if(toggleDataLabelsCheckbox) toggleDataLabelsCheckbox.checked = false; 
-                checkboxLabel.style.display = 'none'; 
+                if(toggleDataLabelsCheckbox) toggleDataLabelsCheckbox.checked = false;
+                checkboxLabel.style.display = 'none';
             } else {
-                checkboxLabel.style.display = 'inline-flex'; 
+                checkboxLabel.style.display = 'inline-flex';
             }
         }
 
@@ -315,68 +330,70 @@ document.addEventListener('DOMContentLoaded', () => {
         else if (selectedType === 'comparison' && comparisonFields) comparisonFields.style.display = 'block';
         else if (selectedType === 'distribution' && distributionFields) distributionFields.style.display = 'block';
     }
-    function updateFilterValueElement(filterRow, selectedColumnName, selectedCondition) { /* ... (código completo de la función) ... */ 
+
+    function updateFilterValueElement(filterRow, selectedColumnName, selectedCondition) { /* ... (código completo de la función que me proporcionaste) ... */
         const valueContainer = filterRow.querySelector('.filter-value-container');
         if (!valueContainer) return;
-        valueContainer.innerHTML = ''; 
+        valueContainer.innerHTML = '';
         const valueNeedsSingleInput = !(selectedCondition === 'is_empty' || selectedCondition === 'is_not_empty' || selectedCondition === 'between');
         const valueNeedsTwoInputs = selectedCondition === 'between';
         const columnType = selectedColumnName ? inferredColumnTypes[selectedColumnName] : 'text';
         let inputType = 'text';
 
-        if (valueNeedsTwoInputs || valueNeedsSingleInput) { 
+        if (valueNeedsTwoInputs || valueNeedsSingleInput) {
             if (columnType === 'numeric') inputType = 'number';
             else if (columnType === 'date') inputType = 'date';
         }
-        
+
         if (valueNeedsTwoInputs && selectedColumnName) {
             const valueInputMin = document.createElement('input');
-            valueInputMin.type = inputType; 
+            valueInputMin.type = inputType;
             valueInputMin.className = 'filter-value-min';
             valueInputMin.placeholder = 'Valor mínimo';
-            valueInputMin.setAttribute('aria-label', 'Valor mínimo del rango para el filtro'); 
+            valueInputMin.setAttribute('aria-label', 'Valor mínimo del rango para el filtro');
             if (inputType === 'number') valueInputMin.step = 'any';
             valueContainer.appendChild(valueInputMin);
 
             const valueInputMax = document.createElement('input');
-            valueInputMax.type = inputType; 
+            valueInputMax.type = inputType;
             valueInputMax.className = 'filter-value-max';
             valueInputMax.placeholder = 'Valor máximo';
-            valueInputMax.setAttribute('aria-label', 'Valor máximo del rango para el filtro'); 
+            valueInputMax.setAttribute('aria-label', 'Valor máximo del rango para el filtro');
             if (inputType === 'number') valueInputMax.step = 'any';
             valueContainer.appendChild(valueInputMax);
 
         } else if ((selectedCondition === 'equals' || selectedCondition === 'not_equals') && selectedColumnName && valueNeedsSingleInput) {
             const valueSelect = document.createElement('select');
-            valueSelect.className = 'filter-value-select'; 
-            valueSelect.setAttribute('aria-label', 'Seleccionar valor para el filtro'); 
+            valueSelect.className = 'filter-value-select';
+            valueSelect.setAttribute('aria-label', 'Seleccionar valor para el filtro');
             const defaultOpt = document.createElement('option');
             defaultOpt.value = ""; defaultOpt.textContent = "-- Selecciona valor --"; valueSelect.appendChild(defaultOpt);
             if (parsedCsvData.length > 0) {
                 const uniqueValues = [...new Set(parsedCsvData.map(row => row[selectedColumnName]))]
-                                     .filter(val => val !== null && val !== undefined && String(val).trim() !== '') 
-                                     .sort((a, b) => {
-                                        if (columnType === 'numeric') return parseFloat(a) - parseFloat(b);
-                                        return String(a).localeCompare(String(b), undefined, {numeric: true});
-                                     });
+                                         .filter(val => val !== null && val !== undefined && String(val).trim() !== '')
+                                         .sort((a, b) => {
+                                             if (columnType === 'numeric') return parseFloat(a) - parseFloat(b);
+                                             return String(a).localeCompare(String(b), undefined, {numeric: true});
+                                         });
                 uniqueValues.forEach(val => {
                     const option = document.createElement('option'); option.value = val; option.textContent = val; valueSelect.appendChild(option);
                 });
             }
             valueContainer.appendChild(valueSelect);
-        } else { 
+        } else {
             const valueInput = document.createElement('input');
             valueInput.type = inputType;
             valueInput.className = 'filter-value';
             valueInput.placeholder = 'Valor a filtrar';
-            valueInput.setAttribute('aria-label', 'Valor para filtrar'); 
-            valueInput.disabled = !valueNeedsSingleInput; 
+            valueInput.setAttribute('aria-label', 'Valor para filtrar');
+            valueInput.disabled = !valueNeedsSingleInput;
             if (inputType === 'number') valueInput.step = 'any';
-            if (!valueNeedsSingleInput && !valueNeedsTwoInputs) valueInput.value = ''; 
+            if (!valueNeedsSingleInput && !valueNeedsTwoInputs) valueInput.value = '';
             valueContainer.appendChild(valueInput);
         }
     }
-    function collectFilterDefinitions() { /* ... (código completo de la función) ... */ 
+
+    function collectFilterDefinitions() { /* ... (código completo de la función que me proporcionaste) ... */
         const definitions = [];
         if(!activeFiltersContainer) return definitions;
         const filterRows = activeFiltersContainer.querySelectorAll('.filter-row');
@@ -384,8 +401,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const column = row.querySelector('.filter-column').value;
             const condition = row.querySelector('.filter-condition').value;
             const valueContainer = row.querySelector('.filter-value-container');
-            let value; 
-            if (!column) return; 
+            let value;
+            if (!column) return;
             if (condition === 'between') {
                 const minInput = valueContainer.querySelector('.filter-value-min');
                 const maxInput = valueContainer.querySelector('.filter-value-max');
@@ -394,25 +411,26 @@ document.addEventListener('DOMContentLoaded', () => {
                     max: maxInput ? maxInput.value : ''
                 };
             } else if (condition === 'is_empty' || condition === 'is_not_empty') {
-                value = ''; 
+                value = '';
             } else {
                 const valueSelect = valueContainer.querySelector('.filter-value-select');
                 const valueTextInput = valueContainer.querySelector('.filter-value');
-                if (valueSelect) { 
+                if (valueSelect) {
                     value = valueSelect.value;
-                } else if (valueTextInput) { 
+                } else if (valueTextInput) {
                     value = valueTextInput.value;
                 } else {
-                    value = ''; 
+                    value = '';
                 }
             }
             definitions.push({ column, condition, value });
         });
         return definitions;
     }
-    function applyAllFilters(dataToFilter, filterDefinitions) { /* ... (código completo de la función) ... */ 
+
+    function applyAllFilters(dataToFilter, filterDefinitions) { /* ... (código completo de la función que me proporcionaste) ... */
         if (!filterDefinitions || filterDefinitions.length === 0) {
-            return dataToFilter; 
+            return dataToFilter;
         }
         return dataToFilter.filter(row => {
             return filterDefinitions.every(filter => {
@@ -423,34 +441,34 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (filter.condition === 'is_not_empty') {
                     return !(rowValueOriginal === null || rowValueOriginal === undefined || String(rowValueOriginal).trim() === '');
                 }
-                const rowValueString = String(rowValueOriginal || '').toLowerCase(); 
+                const rowValueString = String(rowValueOriginal || '').toLowerCase();
                 const rowValueNumeric = parseFloat(rowValueOriginal);
                 if (filter.condition === 'between') {
-                    if (typeof filter.value !== 'object' || filter.value.min === undefined || filter.value.max === undefined) return true; 
+                    if (typeof filter.value !== 'object' || filter.value.min === undefined || filter.value.max === undefined) return true;
                     const filterMinString = String(filter.value.min || '').toLowerCase();
                     const filterMaxString = String(filter.value.max || '').toLowerCase();
                     const filterMinNumeric = parseFloat(filter.value.min);
                     const filterMaxNumeric = parseFloat(filter.value.max);
-                    if (filter.value.min === '' && filter.value.max === '') return true; 
-                    let minCheck = filter.value.min === '' ? true : 
-                                 (!isNaN(rowValueNumeric) && !isNaN(filterMinNumeric) ? rowValueNumeric >= filterMinNumeric : rowValueString >= filterMinString);
+                    if (filter.value.min === '' && filter.value.max === '') return true;
+                    let minCheck = filter.value.min === '' ? true :
+                                   (!isNaN(rowValueNumeric) && !isNaN(filterMinNumeric) ? rowValueNumeric >= filterMinNumeric : rowValueString >= filterMinString);
                     let maxCheck = filter.value.max === '' ? true :
-                                 (!isNaN(rowValueNumeric) && !isNaN(filterMaxNumeric) ? rowValueNumeric <= filterMaxNumeric : rowValueString <= filterMaxString);
+                                   (!isNaN(rowValueNumeric) && !isNaN(filterMaxNumeric) ? rowValueNumeric <= filterMaxNumeric : rowValueString <= filterMaxString);
                     return minCheck && maxCheck;
                 }
                 const filterValueString = String(filter.value || '').toLowerCase();
                 const filterValueNumeric = parseFloat(filter.value);
                 switch (filter.condition) {
                     case 'equals':
-                        if (filter.value.trim() === '' && (rowValueOriginal === null || rowValueOriginal === undefined || String(rowValueOriginal).trim() === '')) return true; 
-                        if (!isNaN(rowValueNumeric) && !isNaN(filterValueNumeric) && String(filter.value).trim() !== '') { 
+                        if (filter.value.trim() === '' && (rowValueOriginal === null || rowValueOriginal === undefined || String(rowValueOriginal).trim() === '')) return true;
+                        if (!isNaN(rowValueNumeric) && !isNaN(filterValueNumeric) && String(filter.value).trim() !== '') {
                            return rowValueNumeric === filterValueNumeric;
                         }
                         return rowValueString === filterValueString;
                     case 'not_equals':
                         if (filter.value.trim() === '' && (rowValueOriginal === null || rowValueOriginal === undefined || String(rowValueOriginal).trim() === '')) return false;
                         if (!isNaN(rowValueNumeric) && !isNaN(filterValueNumeric) && String(filter.value).trim() !== '') {
-                           return rowValueNumeric !== filterValueNumeric;
+                            return rowValueNumeric !== filterValueNumeric;
                         }
                         return rowValueString !== filterValueString;
                     case 'contains': return rowValueString.includes(filterValueString);
@@ -459,15 +477,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     case 'less_than': return !isNaN(rowValueNumeric) && !isNaN(filterValueNumeric) && rowValueNumeric < filterValueNumeric;
                     case 'greater_than_or_equal': return !isNaN(rowValueNumeric) && !isNaN(filterValueNumeric) && rowValueNumeric >= filterValueNumeric;
                     case 'less_than_or_equal': return !isNaN(rowValueNumeric) && !isNaN(filterValueNumeric) && rowValueNumeric <= filterValueNumeric;
-                    default: return true; 
+                    default: return true;
                 }
             });
         });
     }
-    function displayDataTable(headers, data) { /* ... (código completo de la función) ... */ 
+
+    function displayDataTable(headers, data) { /* ... (código completo de la función que me proporcionaste) ... */
         if (!dataTableContainer) return;
-        dataTableContainer.innerHTML = ''; 
-        currentTableData = [...data]; 
+        dataTableContainer.innerHTML = '';
+        currentTableData = [...data];
         if (!currentTableData || currentTableData.length === 0) {
             dataTableContainer.innerHTML = '<p style="text-align:center; padding: 20px; color: #777;">No hay datos para mostrar en la tabla.</p>';
             return;
@@ -483,7 +502,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const th = document.createElement('th');
             th.textContent = headerText;
             th.style.cursor = 'pointer';
-            th.dataset.columnKey = headerText; 
+            th.dataset.columnKey = headerText;
             if (headerText === currentSortColumnKey) {
                 th.textContent += currentSortDirection === 'asc' ? ' ▲' : ' ▼';
             }
@@ -495,13 +514,14 @@ document.addEventListener('DOMContentLoaded', () => {
         thead.appendChild(headerRow);
         table.appendChild(thead);
         const tbody = document.createElement('tbody');
-        populateTableBody(tbody, currentTableData, headers); 
+        populateTableBody(tbody, currentTableData, headers);
         table.appendChild(tbody);
         dataTableContainer.appendChild(table);
     }
-    function populateTableBody(tbodyElement, dataToDisplay, headers) { /* ... (código completo de la función) ... */ 
+
+    function populateTableBody(tbodyElement, dataToDisplay, headers) { /* ... (código completo de la función que me proporcionaste) ... */
         if (!tbodyElement) return;
-        tbodyElement.innerHTML = ''; 
+        tbodyElement.innerHTML = '';
         dataToDisplay.forEach(rowData => {
             const tr = document.createElement('tr');
             headers.forEach(header => {
@@ -512,8 +532,9 @@ document.addEventListener('DOMContentLoaded', () => {
             tbodyElement.appendChild(tr);
         });
     }
-    function sortTableByColumn(headerKey, allHeaders, tbodyElement) { /* ... (código completo de la función) ... */ 
-        if (!tbodyElement) { 
+
+    function sortTableByColumn(headerKey, allHeaders, tbodyElement) { /* ... (código completo de la función que me proporcionaste) ... */
+        if (!tbodyElement) {
             console.error("Error: tbodyElement no existe en sortTableByColumn.");
             return;
         }
@@ -528,10 +549,10 @@ document.addEventListener('DOMContentLoaded', () => {
             let valB = b[currentSortColumnKey];
             const numA = parseFloat(valA);
             const numB = parseFloat(valB);
-            if (!isNaN(numA) && !isNaN(numB)) { 
+            if (!isNaN(numA) && !isNaN(numB)) {
                 valA = numA;
                 valB = numB;
-            } else { 
+            } else {
                 valA = String(valA).toLowerCase();
                 valB = String(valB).toLowerCase();
             }
@@ -539,12 +560,12 @@ document.addEventListener('DOMContentLoaded', () => {
             if (valA > valB) { return currentSortDirection === 'asc' ? 1 : -1; }
             return 0;
         });
-        const tableElement = tbodyElement.closest('table'); 
+        const tableElement = tbodyElement.closest('table');
         if (tableElement && tableElement.querySelector('thead tr')) {
             const headerCells = tableElement.querySelector('thead tr').cells;
             for (let th of headerCells) {
-                if (th.dataset.columnKey) { 
-                    th.textContent = th.dataset.columnKey; 
+                if (th.dataset.columnKey) {
+                    th.textContent = th.dataset.columnKey;
                     if (th.dataset.columnKey === currentSortColumnKey) {
                         th.textContent += currentSortDirection === 'asc' ? ' ▲' : ' ▼';
                     }
@@ -553,19 +574,24 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         populateTableBody(tbodyElement, currentTableData, allHeaders);
     }
-    
+
     // --- renderOrUpdateChart (CON AJUSTES DE LAYOUT) ---
     function renderOrUpdateChart(config, dataForChart) {
-        const { 
-            selectedAnalysisType, 
-            xAxisColumnName, yAxisColumnName, 
-            categoryColumnName, valueColumnName, 
-            dataColumnName 
+        const {
+            selectedAnalysisType,
+            xAxisColumnName, yAxisColumnName,
+            categoryColumnName, valueColumnName,
+            dataColumnName
         } = config;
-        const showDataLabels = toggleDataLabelsCheckbox ? toggleDataLabelsCheckbox.checked : false; 
-        
-        if (chartContainer) chartContainer.innerHTML = ''; 
+        const showDataLabels = toggleDataLabelsCheckbox ? toggleDataLabelsCheckbox.checked : false;
+
+        if (chartContainer) chartContainer.innerHTML = '';
         if (descriptiveSummaryElement) descriptiveSummaryElement.innerHTML = `<span class="icon">📝</span> <strong>Resumen:</strong> Generando...`;
+        
+        // Ocultar el resumen de IA al generar un nuevo gráfico
+        if (aiSummaryResultContainer) aiSummaryResultContainer.style.display = 'none';
+        if (aiSummaryTextElement) aiSummaryTextElement.innerHTML = '';
+
 
         if (!dataForChart || dataForChart.length === 0) {
             if(chartContainer) chartContainer.innerHTML = 'No hay datos para mostrar con los filtros y configuración actual.';
@@ -573,58 +599,56 @@ document.addEventListener('DOMContentLoaded', () => {
             if(dataTableContainer) dataTableContainer.innerHTML = '<p style="text-align:center; padding: 20px; color: #777;">No hay datos para mostrar en la tabla.</p>';
             return;
         }
-        
+
         let plotData = [];
-        // --- INICIO AJUSTES DE LAYOUT ---
-        let layout = { 
-            title: { 
-                text: `Análisis de ${currentFileName}`, 
-                x: 0.5, 
+        let layout = {
+            title: {
+                text: `Análisis de ${currentFileName}`,
+                x: 0.5,
                 xanchor: 'center',
-                y: 0.97, 
+                y: 0.97,
                 yanchor: 'top',
-                font: { size: 16 } 
+                font: { size: 16 }
             },
-            paper_bgcolor: 'rgba(0,0,0,0)', 
+            paper_bgcolor: 'rgba(0,0,0,0)',
             plot_bgcolor: 'rgba(0,0,0,0)',
-            autosize: false, // ESTABLECER EN FALSE
-            width: chartContainer ? chartContainer.offsetWidth - 20 : 780, // ANCHO EXPLÍCITO
-            height: 450,    // ALTURA FIJA
-            margin: { 
-                l: 70,  
-                r: 40,  
-                b: 110, 
-                t: 75,  
+            autosize: false,
+            width: chartContainer ? chartContainer.offsetWidth - 20 : 780,
+            height: 450,
+            margin: {
+                l: 70,
+                r: 40,
+                b: 110,
+                t: 75,
                 pad: 5
             },
-            xaxis: { 
-                automargin: true, 
-                tickangle: -45, 
-                tickfont: { size: 10 } 
-            }, 
-            yaxis: { 
+            xaxis: {
                 automargin: true,
-                tickfont: { size: 10 } 
-            }  
+                tickangle: -45,
+                tickfont: { size: 10 }
+            },
+            yaxis: {
+                automargin: true,
+                tickfont: { size: 10 }
+            }
         };
-        // --- FIN AJUSTES DE LAYOUT ---
-        
+
         let traceMode = 'lines+markers';
         let textValues = null;
         let textPosition = 'top center';
         const textFont = { family: 'Arial, sans-serif', size: 10, color: 'grey' };
-        let xDataMapped, yDataMapped; 
+        let xDataMapped, yDataMapped;
 
         if (selectedAnalysisType === 'trend') {
             xDataMapped = dataForChart.map(row => row[xAxisColumnName]);
-            yDataMapped = dataForChart.map(row => row[yAxisColumnName]); 
+            yDataMapped = dataForChart.map(row => row[yAxisColumnName]);
             const yNumericForPlot = yDataMapped.map(v => parseFloat(v));
             if (showDataLabels) {
                 traceMode = 'lines+markers+text';
                 textValues = yNumericForPlot.map(v => v.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 2}));
             }
             plotData = [{ x: xDataMapped, y: yNumericForPlot, type: 'scatter', mode: traceMode, text: textValues, textposition: textPosition, textfont: textFont, name: `${yAxisColumnName} vs ${xAxisColumnName}` }];
-            layout.xaxis.title = xAxisColumnName; 
+            layout.xaxis.title = xAxisColumnName;
             layout.yaxis.title = yAxisColumnName;
             layout.title.text = `Tendencia de ${yAxisColumnName} por ${xAxisColumnName}`;
         } else if (selectedAnalysisType === 'comparison') {
@@ -636,38 +660,38 @@ document.addEventListener('DOMContentLoaded', () => {
                     groupedData[category] = (groupedData[category] || 0) + value;
                 }
             });
-            xDataMapped = Object.keys(groupedData);    
-            yDataMapped = xDataMapped.map(cat => groupedData[cat]); 
-            const yNumericForPlot = yDataMapped; 
+            xDataMapped = Object.keys(groupedData);
+            yDataMapped = xDataMapped.map(cat => groupedData[cat]);
+            const yNumericForPlot = yDataMapped;
             textPosition = 'outside';
             if (showDataLabels) {
                 textValues = yNumericForPlot.map(v => v.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 2}));
             }
             plotData = [{ x: xDataMapped, y: yNumericForPlot, type: 'bar', text: textValues, textposition: textPosition, textfont: textFont, name: `${valueColumnName} por ${categoryColumnName}` }];
-            layout.xaxis.title = categoryColumnName; 
-            layout.yaxis.title = `Suma de ${valueColumnName}`; 
+            layout.xaxis.title = categoryColumnName;
+            layout.yaxis.title = `Suma de ${valueColumnName}`;
             layout.title.text = `Comparación de Suma de ${valueColumnName} por ${categoryColumnName}`;
         } else if (selectedAnalysisType === 'distribution') {
-            xDataMapped = dataForChart.map(row => row[dataColumnName]); 
-            const xNumericForPlot = xDataMapped.map(v => parseFloat(v)); 
+            xDataMapped = dataForChart.map(row => row[dataColumnName]);
+            const xNumericForPlot = xDataMapped.map(v => parseFloat(v));
             plotData = [{ x: xNumericForPlot, type: 'histogram', name: `Distribución de ${dataColumnName}` }];
-            layout.xaxis.title = dataColumnName; 
-            layout.xaxis.tickangle = 0; 
+            layout.xaxis.title = dataColumnName;
+            layout.xaxis.tickangle = 0;
             layout.yaxis.title = "Frecuencia";
             layout.title.text = `Distribución de ${dataColumnName}`;
         }
-        
+
         Plotly.newPlot(chartContainer, plotData, layout, {responsive: true})
-            .then(function(gd) { 
-                if (gd && gd.offsetParent !== null) { 
-                    Plotly.Plots.resize(gd); // Forzar resize después de dibujar
+            .then(function(gd) {
+                if (gd && gd.offsetParent !== null) {
+                    Plotly.Plots.resize(gd);
                 }
             })
             .catch(function(err) {
                 console.error("Error al dibujar el gráfico con Plotly:", err);
                 if(chartContainer) chartContainer.innerHTML = 'Error al generar el gráfico.';
             });
-        
+
         let summaryOutput;
         if (selectedAnalysisType === 'trend') {
             summaryOutput = generateDescriptiveSummary(selectedAnalysisType, xDataMapped, yDataMapped, xAxisColumnName, yAxisColumnName, null,null,null, dataForChart);
@@ -678,19 +702,17 @@ document.addEventListener('DOMContentLoaded', () => {
             summaryOutput = generateDescriptiveSummary(selectedAnalysisType, originalDistributionData, null, dataColumnName, null, null, null, dataColumnName, dataForChart);
         }
         if(descriptiveSummaryElement) descriptiveSummaryElement.innerHTML = `<span class="icon">📝</span> <strong>Resumen:</strong> ${summaryOutput}`;
-        
+
         if (availableHeaders.length > 0) {
-            displayDataTable(availableHeaders, dataForChart); 
+            displayDataTable(availableHeaders, dataForChart);
         }
     }
-    
-    // --- Event Listeners para Botones ---
+
+    // --- Event Listeners para Botones (Existentes) ---
     if (selectFileButton && fileInput) {
         selectFileButton.addEventListener('click', () => {
-            // console.log("app.js: Botón 'Seleccionar Archivo' CLICKEADO.");
             if (fileInput) {
-                 fileInput.click();
-                // console.log("app.js: fileInput.click() EJECUTADO.");
+                fileInput.click();
             } else {
                 console.error("app.js: fileInput es NULL DENTRO del listener del botón 'Seleccionar Archivo'.");
             }
@@ -700,70 +722,59 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error("app.js: No se pudo añadir listener a selectFileButton. Elemento(s) no encontrado(s).");
     }
 
-    if(changeFileButton && fileInput) { 
-        changeFileButton.addEventListener('click', () => { resetToUploadView(); if(fileInput) fileInput.click(); }); 
-        // console.log("app.js: Event listener para changeFileButton AÑADIDO.");
+    if(changeFileButton && fileInput) {
+        changeFileButton.addEventListener('click', () => { resetToUploadView(); if(fileInput) fileInput.click(); });
     }
-    
+
     if(fileInput) {
         fileInput.addEventListener('change', (event) => {
-            // console.log("app.js: fileInput 'change' evento detectado."); 
             const files = event.target.files;
             if (files.length > 0) {
                 const selectedFile = files[0];
-                // console.log("app.js: Archivo seleccionado:", selectedFile.name); 
                 currentFileName = selectedFile.name;
                 if (fileNameDisplay) fileNameDisplay.textContent = currentFileName;
                 if (fileLoadedStatus) fileLoadedStatus.style.display = 'block';
-                
-                resetApplicationStateBeforeNewFile(); 
-                // console.log("app.js: Estado de la aplicación reseteado antes de leer el nuevo archivo.");
+
+                resetApplicationStateBeforeNewFile();
 
                 const reader = new FileReader();
                 reader.onload = (e) => {
-                    // console.log("app.js: FileReader onload - Archivo leído, procesando..."); 
                     try {
                         let parsedResult;
                         if (selectedFile.name.toLowerCase().endsWith('.csv')) {
-                            // console.log("app.js: Procesando como CSV..."); 
-                            const fileContent = e.target.result; 
-                            parsedResult = parseCSVText(fileContent); 
+                            const fileContent = e.target.result;
+                            parsedResult = parseCSVText(fileContent);
                         } else if (selectedFile.name.toLowerCase().endsWith('.xlsx') || selectedFile.name.toLowerCase().endsWith('.xls')) {
-                            // console.log("app.js: Procesando como Excel..."); 
-                            if (typeof XLSX === 'undefined') { 
+                            if (typeof XLSX === 'undefined') {
                                 alert('La librería para leer archivos Excel (SheetJS) no se ha cargado correctamente.');
                                 console.error("SheetJS (XLSX) no está definido.");
                                 resetFileSelection();
                                 return;
                             }
-                            const arrayBuffer = e.target.result; 
+                            const arrayBuffer = e.target.result;
                             parsedResult = parseExcelData(arrayBuffer);
                         } else {
                             alert('Formato de archivo no soportado. Por favor, sube un archivo CSV o Excel.');
                             resetFileSelection();
                             return;
                         }
-                        
-                        // console.log("app.js: Archivo parseado."); 
+
                         availableHeaders = parsedResult.headers;
-                        parsedCsvData = parsedResult.data; 
+                        parsedCsvData = parsedResult.data;
 
                         if (availableHeaders.length > 0) {
-                            // console.log("app.js: Encabezados encontrados. Poblando UI.");
                             inferredColumnTypes = inferColumnTypes(parsedCsvData, availableHeaders);
                             populateColumnSelectors(availableHeaders);
-                            updateSmartSuggestion(availableHeaders, inferredColumnTypes); 
+                            updateSmartSuggestion(availableHeaders, inferredColumnTypes);
                         } else {
                             alert('No se pudieron leer encabezados o datos del archivo. Asegúrate de que el formato sea correcto y no esté vacío.');
-                            updateSmartSuggestion([], {}); 
+                            updateSmartSuggestion([], {});
                         }
-                        
-                        // console.log("app.js: Intentando cambiar de vista a definición de análisis...");
+
                         if (dataUploadSection) dataUploadSection.style.display = 'none';
                         if (analysisDefinitionSection) analysisDefinitionSection.style.display = 'block';
                         if (smartSuggestionBox) smartSuggestionBox.style.display = 'block';
                         if (manualAnalysisForm) manualAnalysisForm.style.display = 'none';
-                        // console.log("app.js: Cambio de vista (intentado). dataUploadSection:", dataUploadSection ? dataUploadSection.style.display : 'N/A', "analysisDefinitionSection:", analysisDefinitionSection ? analysisDefinitionSection.style.display : 'N/A');
                     } catch (error) {
                         console.error("Error procesando el archivo en reader.onload:", error);
                         alert(`Ocurrió un error al procesar el archivo: ${error.message}`);
@@ -777,26 +788,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 };
 
                 if (selectedFile.name.toLowerCase().endsWith('.csv')) {
-                    // console.log("app.js: Leyendo archivo como texto (CSV)."); 
-                    reader.readAsText(selectedFile); 
+                    reader.readAsText(selectedFile);
                 } else if (selectedFile.name.toLowerCase().endsWith('.xlsx') || selectedFile.name.toLowerCase().endsWith('.xls')) {
-                    // console.log("app.js: Leyendo archivo como ArrayBuffer (Excel)."); 
-                    reader.readAsArrayBuffer(selectedFile); 
+                    reader.readAsArrayBuffer(selectedFile);
                 } else {
-                    alert('Formato de archivo no soportado.'); 
+                    alert('Formato de archivo no soportado.');
                     resetFileSelection();
                 }
-            } else {
-                // console.log("app.js: fileInput 'change' evento sin archivos.");
             }
         });
-        // console.log("app.js: Event listener para fileInput AÑADIDO.");
     }
 
-    if(useSuggestionButton) { useSuggestionButton.addEventListener('click', () => { /* ... (código completo) ... */ 
+    if(useSuggestionButton) { useSuggestionButton.addEventListener('click', () => { /* ... (código completo de la función que me proporcionaste) ... */
         if (currentSmartSuggestion && currentSmartSuggestion.type && analysisTypeSelect && manualAnalysisForm && smartSuggestionBox && typeof displayDynamicFields === 'function') {
             analysisTypeSelect.value = currentSmartSuggestion.type;
-            displayDynamicFields(); 
+            displayDynamicFields();
             if (currentSmartSuggestion.type === 'trend' && currentSmartSuggestion.xCol && currentSmartSuggestion.yCol) {
                 const xAxisTrendEl = document.getElementById('xAxisTrend');
                 const yAxisTrendEl = document.getElementById('yAxisTrend');
@@ -815,144 +821,151 @@ document.addEventListener('DOMContentLoaded', () => {
             smartSuggestionBox.style.display = 'none';
         } else {
             alert("No hay una sugerencia activa para aplicar o la sugerencia es inválida.");
-            if (manualAnalysisForm) manualAnalysisForm.style.display = 'block'; 
+            if (manualAnalysisForm) manualAnalysisForm.style.display = 'block';
             if (smartSuggestionBox) smartSuggestionBox.style.display = 'none';
         }
     });}
-    if(manualConfigButton) { manualConfigButton.addEventListener('click', () => { /* ... (código completo) ... */ 
+
+    if(manualConfigButton) { manualConfigButton.addEventListener('click', () => { /* ... (código completo de la función que me proporcionaste) ... */
         if (smartSuggestionBox) smartSuggestionBox.style.display = 'none';
         if (manualAnalysisForm) manualAnalysisForm.style.display = 'block';
-        if (analysisTypeSelect) analysisTypeSelect.value = ''; 
+        if (analysisTypeSelect) analysisTypeSelect.value = '';
         displayDynamicFields();
     });}
+
     if(analysisTypeSelect) { analysisTypeSelect.addEventListener('change', displayDynamicFields); }
-    if(addFilterButton) { addFilterButton.addEventListener('click', () => { /* ... (código completo) ... */ 
+
+    if(addFilterButton) { addFilterButton.addEventListener('click', () => { /* ... (código completo de la función que me proporcionaste) ... */
         if (availableHeaders.length === 0) {
             alert("Carga un archivo primero para poder definir filtros basados en sus columnas.");
             return;
         }
         const filterRow = document.createElement('div');
         filterRow.className = 'filter-row';
-        const columnSelect = document.createElement('select');
-        columnSelect.className = 'filter-column';
-        columnSelect.setAttribute('aria-label', 'Columna para el filtro');
+        const columnSelectElement = document.createElement('select'); // Renombrado para evitar conflicto con variable global
+        columnSelectElement.className = 'filter-column';
+        columnSelectElement.setAttribute('aria-label', 'Columna para el filtro');
         const defaultColOpt = document.createElement('option');
-        defaultColOpt.value = ""; defaultColOpt.textContent = "-- Columna --"; columnSelect.appendChild(defaultColOpt);
+        defaultColOpt.value = ""; defaultColOpt.textContent = "-- Columna --"; columnSelectElement.appendChild(defaultColOpt);
         availableHeaders.forEach(header => {
-            const option = document.createElement('option'); option.value = header; option.textContent = header; columnSelect.appendChild(option);
+            const option = document.createElement('option'); option.value = header; option.textContent = header; columnSelectElement.appendChild(option);
         });
         const conditionSelect = document.createElement('select');
         conditionSelect.className = 'filter-condition';
         conditionSelect.setAttribute('aria-label', 'Condición del filtro');
-        filterConditions.forEach(cond => { 
+        filterConditions.forEach(cond => {
             const option = document.createElement('option'); option.value = cond.value; option.textContent = cond.text; conditionSelect.appendChild(option);
         });
         const valueContainer = document.createElement('span');
         valueContainer.className = 'filter-value-container';
-        columnSelect.addEventListener('change', () => updateFilterValueElement(filterRow, columnSelect.value, conditionSelect.value));
-        conditionSelect.addEventListener('change', () => updateFilterValueElement(filterRow, columnSelect.value, conditionSelect.value));
+        columnSelectElement.addEventListener('change', () => updateFilterValueElement(filterRow, columnSelectElement.value, conditionSelect.value));
+        conditionSelect.addEventListener('change', () => updateFilterValueElement(filterRow, columnSelectElement.value, conditionSelect.value));
         const removeButton = document.createElement('button');
-        removeButton.type = 'button'; removeButton.className = 'remove-filter-button'; removeButton.textContent = '✕'; 
+        removeButton.type = 'button'; removeButton.className = 'remove-filter-button'; removeButton.textContent = '✕';
         removeButton.setAttribute('aria-label', 'Quitar este filtro');
         removeButton.addEventListener('click', () => { filterRow.remove(); });
-        filterRow.appendChild(columnSelect);
+        filterRow.appendChild(columnSelectElement);
         filterRow.appendChild(conditionSelect);
-        filterRow.appendChild(valueContainer); 
+        filterRow.appendChild(valueContainer);
         filterRow.appendChild(removeButton);
         if (activeFiltersContainer) activeFiltersContainer.appendChild(filterRow);
-        updateFilterValueElement(filterRow, columnSelect.value, conditionSelect.value); 
+        updateFilterValueElement(filterRow, columnSelectElement.value, conditionSelect.value);
     });}
-    if(generateAnalysisButton) { generateAnalysisButton.addEventListener('click', (event) => { /* ... (código completo) ... */ 
-            event.preventDefault(); 
-            if(!analysisTypeSelect) return;
-            const selectedAnalysisType = analysisTypeSelect.value;
-            if (!selectedAnalysisType) {
-                alert("Por favor, selecciona un Tipo de Análisis.");
-                return;
-            }
-            const filterDefinitions = collectFilterDefinitions();
-            const filteredData = applyAllFilters(parsedCsvData, filterDefinitions);
 
-            if (filteredData.length === 0 && parsedCsvData.length > 0 && filterDefinitions.length > 0) { 
-                 if(chartContainer) chartContainer.innerHTML = 'Ningún dato coincide con los filtros aplicados.';
-                 if(descriptiveSummaryElement) descriptiveSummaryElement.innerHTML = `<span class="icon">📝</span> <strong>Resumen:</strong> No hay datos para analizar después de aplicar los filtros.`;
-                 if(dataTableContainer) dataTableContainer.innerHTML = '<p style="text-align:center; padding: 20px; color: #777;">Ningún dato coincide con los filtros aplicados.</p>'; 
-                 if (analysisDefinitionSection) analysisDefinitionSection.style.display = 'none';
-                 if (dashboardResultsSection) dashboardResultsSection.style.display = 'block';
-                 if(dashboardFileName) dashboardFileName.textContent = currentFileName + " (filtrado)"; 
-                 if(chartContainer) Plotly.purge(chartContainer); 
-                 lastChartConfig = null; 
-                 return; 
-            } else if (filteredData.length === 0 && parsedCsvData.length === 0){
-                if(chartContainer) chartContainer.innerHTML = 'No hay datos cargados para analizar.';
-                if(descriptiveSummaryElement) descriptiveSummaryElement.innerHTML = `<span class="icon">📝</span> <strong>Resumen:</strong> No hay datos cargados.`;
-                if(dataTableContainer) dataTableContainer.innerHTML = '<p style="text-align:center; padding: 20px; color: #777;">No hay datos cargados.</p>'; 
-                if (analysisDefinitionSection) analysisDefinitionSection.style.display = 'none';
-                if (dashboardResultsSection) dashboardResultsSection.style.display = 'block';
-                if(dashboardFileName) dashboardFileName.textContent = currentFileName; 
-                if(chartContainer) Plotly.purge(chartContainer); 
-                lastChartConfig = null; 
-                return;
-            }
+    if(generateAnalysisButton) { generateAnalysisButton.addEventListener('click', (event) => { /* ... (código completo de la función que me proporcionaste) ... */
+        event.preventDefault();
+        if(!analysisTypeSelect) return;
+        const selectedAnalysisType = analysisTypeSelect.value;
+        if (!selectedAnalysisType) {
+            alert("Por favor, selecciona un Tipo de Análisis.");
+            return;
+        }
+        const filterDefinitions = collectFilterDefinitions();
+        const filteredData = applyAllFilters(parsedCsvData, filterDefinitions);
 
-            let xAxisColumnName = "", yAxisColumnName = "", categoryColumnName = "", valueColumnName = "", dataColumnName = "";
-            if (selectedAnalysisType === 'trend') {
-                xAxisColumnName = document.getElementById('xAxisTrend').value;
-                yAxisColumnName = document.getElementById('yAxisTrend').value;
-                if (!xAxisColumnName || !yAxisColumnName) { 
-                    if(chartContainer) chartContainer.textContent = 'Configuración incompleta.';
-                    if(dataTableContainer) dataTableContainer.innerHTML = ''; 
-                    alert("Por favor, selecciona las columnas para Eje X y Eje Y.");
-                    return;
-                }
-            } else if (selectedAnalysisType === 'comparison') {
-                categoryColumnName = document.getElementById('categoryAxisComparison').value;
-                valueColumnName = document.getElementById('valueAxisComparison').value;
-                if (!categoryColumnName || !valueColumnName) { 
-                    if(chartContainer) chartContainer.textContent = 'Configuración incompleta.';
-                    if(dataTableContainer) dataTableContainer.innerHTML = '';
-                    alert("Por favor, selecciona las columnas para Categoría y Valor.");
-                    return;
-                }
-            } else if (selectedAnalysisType === 'distribution') {
-                dataColumnName = document.getElementById('dataColumnDistribution').value;
-                if (!dataColumnName) { 
-                    if(chartContainer) chartContainer.textContent = 'Configuración incompleta.';
-                    if(dataTableContainer) dataTableContainer.innerHTML = '';
-                    alert("Por favor, selecciona la columna de datos para la distribución.");
-                    return;
-                }
-            } else { 
-                if(chartContainer) chartContainer.textContent = 'Tipo de análisis no implementado.';
-                if(dataTableContainer) dataTableContainer.innerHTML = '';
-                return;
-            }
-            
-            lastChartConfig = { 
-                selectedAnalysisType, 
-                xAxisColumnName, yAxisColumnName, 
-                categoryColumnName, valueColumnName, 
-                dataColumnName,
-                filters: filterDefinitions 
-            };
-
+        if (filteredData.length === 0 && parsedCsvData.length > 0 && filterDefinitions.length > 0) {
+            if(chartContainer) chartContainer.innerHTML = 'Ningún dato coincide con los filtros aplicados.';
+            if(descriptiveSummaryElement) descriptiveSummaryElement.innerHTML = `<span class="icon">📝</span> <strong>Resumen:</strong> No hay datos para analizar después de aplicar los filtros.`;
+            if(dataTableContainer) dataTableContainer.innerHTML = '<p style="text-align:center; padding: 20px; color: #777;">Ningún dato coincide con los filtros aplicados.</p>';
+            if (aiSummaryResultContainer) aiSummaryResultContainer.style.display = 'none'; // Ocultar AI summary
             if (analysisDefinitionSection) analysisDefinitionSection.style.display = 'none';
             if (dashboardResultsSection) dashboardResultsSection.style.display = 'block';
-            if(dashboardFileName) dashboardFileName.textContent = currentFileName + (filterDefinitions.length > 0 ? " (filtrado)" : ""); 
-            
-            renderOrUpdateChart(lastChartConfig, filteredData); 
-        });
-    }
+            if(dashboardFileName) dashboardFileName.textContent = currentFileName + " (filtrado)";
+            if(chartContainer) Plotly.purge(chartContainer);
+            lastChartConfig = null;
+            return;
+        } else if (filteredData.length === 0 && parsedCsvData.length === 0){
+            if(chartContainer) chartContainer.innerHTML = 'No hay datos cargados para analizar.';
+            if(descriptiveSummaryElement) descriptiveSummaryElement.innerHTML = `<span class="icon">📝</span> <strong>Resumen:</strong> No hay datos cargados.`;
+            if(dataTableContainer) dataTableContainer.innerHTML = '<p style="text-align:center; padding: 20px; color: #777;">No hay datos cargados.</p>';
+            if (aiSummaryResultContainer) aiSummaryResultContainer.style.display = 'none'; // Ocultar AI summary
+            if (analysisDefinitionSection) analysisDefinitionSection.style.display = 'none';
+            if (dashboardResultsSection) dashboardResultsSection.style.display = 'block';
+            if(dashboardFileName) dashboardFileName.textContent = currentFileName;
+            if(chartContainer) Plotly.purge(chartContainer);
+            lastChartConfig = null;
+            return;
+        }
+
+        let xAxisColumnName = "", yAxisColumnName = "", categoryColumnName = "", valueColumnName = "", dataColumnName = "";
+        if (selectedAnalysisType === 'trend') {
+            xAxisColumnName = document.getElementById('xAxisTrend').value;
+            yAxisColumnName = document.getElementById('yAxisTrend').value;
+            if (!xAxisColumnName || !yAxisColumnName) {
+                if(chartContainer) chartContainer.textContent = 'Configuración incompleta.';
+                if(dataTableContainer) dataTableContainer.innerHTML = '';
+                alert("Por favor, selecciona las columnas para Eje X y Eje Y.");
+                return;
+            }
+        } else if (selectedAnalysisType === 'comparison') {
+            categoryColumnName = document.getElementById('categoryAxisComparison').value;
+            valueColumnName = document.getElementById('valueAxisComparison').value;
+            if (!categoryColumnName || !valueColumnName) {
+                if(chartContainer) chartContainer.textContent = 'Configuración incompleta.';
+                if(dataTableContainer) dataTableContainer.innerHTML = '';
+                alert("Por favor, selecciona las columnas para Categoría y Valor.");
+                return;
+            }
+        } else if (selectedAnalysisType === 'distribution') {
+            dataColumnName = document.getElementById('dataColumnDistribution').value;
+            if (!dataColumnName) {
+                if(chartContainer) chartContainer.textContent = 'Configuración incompleta.';
+                if(dataTableContainer) dataTableContainer.innerHTML = '';
+                alert("Por favor, selecciona la columna de datos para la distribución.");
+                return;
+            }
+        } else {
+            if(chartContainer) chartContainer.textContent = 'Tipo de análisis no implementado.';
+            if(dataTableContainer) dataTableContainer.innerHTML = '';
+            return;
+        }
+
+        lastChartConfig = {
+            selectedAnalysisType,
+            xAxisColumnName, yAxisColumnName,
+            categoryColumnName, valueColumnName,
+            dataColumnName,
+            filters: filterDefinitions
+        };
+
+        if (analysisDefinitionSection) analysisDefinitionSection.style.display = 'none';
+        if (dashboardResultsSection) dashboardResultsSection.style.display = 'block';
+        if(dashboardFileName) dashboardFileName.textContent = currentFileName + (filterDefinitions.length > 0 ? " (filtrado)" : "");
+
+        renderOrUpdateChart(lastChartConfig, filteredData);
+    });}
+
     if (toggleDataLabelsCheckbox) {
-        toggleDataLabelsCheckbox.addEventListener('change', () => { 
+        toggleDataLabelsCheckbox.addEventListener('change', () => {
             if (lastChartConfig && dashboardResultsSection && dashboardResultsSection.style.display === 'block' && parsedCsvData.length > 0) {
                 const dataToRender = applyAllFilters(parsedCsvData, lastChartConfig.filters || []);
                 renderOrUpdateChart(lastChartConfig, dataToRender);
             }
         });
     }
-    if(downloadChartButton) { 
-        downloadChartButton.addEventListener('click', () => { 
+
+    if(downloadChartButton) {
+        downloadChartButton.addEventListener('click', () => {
             if (parsedCsvData.length > 0 && chartContainer && chartContainer.querySelector('.plot-container')) {
                 let filename = 'grafico_SIR-Analytics';
                 if (currentFileName) {
@@ -966,16 +979,17 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-    if(downloadDataButton) { 
-        downloadDataButton.addEventListener('click', () => { 
-            const filterDefinitions = collectFilterDefinitions(); 
+
+    if(downloadDataButton) {
+        downloadDataButton.addEventListener('click', () => {
+            const filterDefinitions = collectFilterDefinitions();
             const dataToDownload = applyAllFilters(parsedCsvData, filterDefinitions);
             if (!dataToDownload || dataToDownload.length === 0) {
                 alert("No hay datos (o datos filtrados) para descargar.");
                 return;
             }
             let csvContent = availableHeaders.join(';') + '\r\n';
-            dataToDownload.forEach(rowObject => { 
+            dataToDownload.forEach(rowObject => {
                 const rowValues = availableHeaders.map(header => {
                     let cellValue = rowObject[header] === null || rowObject[header] === undefined ? '' : String(rowObject[header]);
                     if (cellValue.includes(';')) { cellValue = `"${cellValue.replace(/"/g, '""')}"`; }
@@ -987,56 +1001,132 @@ document.addEventListener('DOMContentLoaded', () => {
             let filename = 'datos_SIR-Analytics.csv';
             if (currentFileName) {
                 const nameParts = currentFileName.split('.');
-                if (nameParts.length > 1) nameParts.pop(); 
+                if (nameParts.length > 1) nameParts.pop();
                 filename = `datos_${nameParts.join('.')}${filterDefinitions.length > 0 ? '_filtrado' : ''}.csv`;
             }
-            const link = document.createElement("a"); 
-            if (link.download !== undefined) { 
+            const link = document.createElement("a");
+            if (link.download !== undefined) {
                 const url = URL.createObjectURL(blob);
                 link.setAttribute("href", url); link.setAttribute("download", filename);
                 link.style.visibility = 'hidden'; document.body.appendChild(link);
                 link.click(); document.body.removeChild(link);
-                URL.revokeObjectURL(url); 
+                URL.revokeObjectURL(url);
             } else { alert("La descarga directa no es soportada por tu navegador."); }
         });
     }
-    if(performNewAnalysisButton) { 
-        performNewAnalysisButton.addEventListener('click', () => { 
+
+    if(performNewAnalysisButton) {
+        performNewAnalysisButton.addEventListener('click', () => {
             resetToUploadView();
         });
     }
 
+    // --- Event Listener para el Botón de Resumen con IA ---
+    if (getAISummaryButton && aiSummaryResultContainer && aiSummaryTextElement && descriptiveSummaryElement) {
+        getAISummaryButton.addEventListener('click', async () => {
+            if (!lastChartConfig || !parsedCsvData || parsedCsvData.length === 0) {
+                alert("Primero genera un gráfico para obtener un análisis con IA.");
+                aiSummaryResultContainer.style.display = 'none';
+                return;
+            }
+
+            aiSummaryResultContainer.style.display = 'block';
+            aiSummaryTextElement.innerHTML = '<em>Conectando con la IA y generando análisis... Por favor, espera.</em> ✨';
+            getAISummaryButton.disabled = true;
+
+            const { selectedAnalysisType } = lastChartConfig;
+            let xAxisLabel = "N/A";
+            let yAxisLabel = "N/A";
+
+            if (selectedAnalysisType === 'trend') {
+                xAxisLabel = lastChartConfig.xAxisColumnName || "Eje X";
+                yAxisLabel = lastChartConfig.yAxisColumnName || "Eje Y";
+            } else if (selectedAnalysisType === 'comparison') {
+                xAxisLabel = lastChartConfig.categoryColumnName || "Categoría";
+                yAxisLabel = `Suma de ${lastChartConfig.valueColumnName || "Valor"}`;
+            } else if (selectedAnalysisType === 'distribution') {
+                xAxisLabel = lastChartConfig.dataColumnName || "Datos";
+                yAxisLabel = "Frecuencia";
+            }
+
+            const keyInsightsFromBasicSummary = descriptiveSummaryElement.textContent.replace(/📝 Resumen: /g, '').trim();
+
+            const dataForAI = {
+                chartType: selectedAnalysisType,
+                xAxisColumnName: xAxisLabel,
+                yAxisColumnName: yAxisLabel,
+                keyDataInsights: keyInsightsFromBasicSummary
+            };
+
+            try {
+                const response = await fetch('/api/get-ai-summary', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(dataForAI),
+                });
+
+                getAISummaryButton.disabled = false;
+
+                if (!response.ok) {
+                    const errorResult = await response.json();
+                    console.error("Error desde la función serverless:", errorResult.error || response.statusText);
+                    aiSummaryTextElement.textContent = `Error al obtener el análisis de IA: ${errorResult.error || response.statusText}`;
+                    return;
+                }
+
+                const result = await response.json();
+                aiSummaryTextElement.innerHTML = result.aiSummary.replace(/\n/g, '<br>');
+
+            } catch (error) {
+                getAISummaryButton.disabled = false;
+                console.error("Error al llamar a la función para el resumen de IA:", error);
+                aiSummaryTextElement.textContent = "Error de conexión al intentar obtener el análisis de IA. Verifica tu conexión o inténtalo más tarde.";
+            }
+        });
+        console.log("app.js: Event listener para getAISummaryButton AÑADIDO.");
+    } else {
+        console.warn("app.js: No se pudieron encontrar todos los elementos para la funcionalidad de Resumen con IA (getAISummaryButton, aiSummaryResultContainer, aiSummaryTextElement, descriptiveSummaryElement).");
+    }
+
     // --- Funciones de Reseteo ---
-    function resetApplicationStateBeforeNewFile() {    
+    function resetApplicationStateBeforeNewFile() {
         availableHeaders = []; parsedCsvData = []; resetColumnSelectors();
         if(analysisTypeSelect) analysisTypeSelect.value = '';
-        displayDynamicFields(); 
+        displayDynamicFields();
         if(smartSuggestionText) smartSuggestionText.innerHTML = `<span class="icon">💡</span> <strong>Sugerencia:</strong> (Esperando datos del archivo para generar sugerencia...)`;
-        lastChartConfig = null; 
-        if(toggleDataLabelsCheckbox) toggleDataLabelsCheckbox.checked = false; 
-        currentSmartSuggestion = null; 
-        if(activeFiltersContainer) activeFiltersContainer.innerHTML = ''; 
-        inferredColumnTypes = {}; 
-        if(dataTableContainer) dataTableContainer.innerHTML = ''; 
-        currentTableData = []; 
-        currentSortColumnKey = null; 
+        lastChartConfig = null;
+        if(toggleDataLabelsCheckbox) toggleDataLabelsCheckbox.checked = false;
+        currentSmartSuggestion = null;
+        if(activeFiltersContainer) activeFiltersContainer.innerHTML = '';
+        inferredColumnTypes = {};
+        if(dataTableContainer) dataTableContainer.innerHTML = '';
+        currentTableData = [];
+        currentSortColumnKey = null;
+        if (aiSummaryResultContainer) aiSummaryResultContainer.style.display = 'none'; // Ocultar AI summary
+        if (aiSummaryTextElement) aiSummaryTextElement.innerHTML = '';
     }
-    function resetToUploadView() {    
-        currentFileName = ''; 
-        if(fileInput) fileInput.value = null; 
-        resetApplicationStateBeforeNewFile(); 
+
+    function resetToUploadView() {
+        currentFileName = '';
+        if(fileInput) fileInput.value = null;
+        resetApplicationStateBeforeNewFile();
         if(dashboardResultsSection) dashboardResultsSection.style.display = 'none';
         if(analysisDefinitionSection) analysisDefinitionSection.style.display = 'none';
         if(manualAnalysisForm) manualAnalysisForm.style.display = 'none';
         if(smartSuggestionBox) smartSuggestionBox.style.display = 'block';
         if(dataUploadSection) dataUploadSection.style.display = 'block';
         if(fileLoadedStatus) fileLoadedStatus.style.display = 'none';
-        if(fileNameDisplay) fileNameDisplay.textContent = ''; 
+        if(fileNameDisplay) fileNameDisplay.textContent = '';
         if(chartContainer) {
-            Plotly.purge(chartContainer); 
+            Plotly.purge(chartContainer);
             chartContainer.textContent = 'Aquí se mostrará el gráfico interactivo (Plotly.js).';
         }
         if(descriptiveSummaryElement) descriptiveSummaryElement.innerHTML = `<span class="icon">📝</span> <strong>Resumen:</strong> (Este es un resumen descriptivo básico generado automáticamente.)`;
+        // También asegurarse de ocultar el resumen de IA al resetear completamente
+        if (aiSummaryResultContainer) aiSummaryResultContainer.style.display = 'none';
+        if (aiSummaryTextElement) aiSummaryTextElement.innerHTML = '';
     }
 
     console.log("app.js: Aplicación SIR - Analytics completamente inicializada y todos los listeners configurados (o intentados).");
