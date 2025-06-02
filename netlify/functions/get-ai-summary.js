@@ -2,7 +2,8 @@
 // pero para Netlify Functions, puedes empaquetarlo o confiar en dependencias manejadas por Netlify si configuras un package.json)
 // Para simplicidad inicial, vamos a usar 'node-fetch' para hacer la llamada HTTP directamente si el SDK es complejo de configurar sin un package.json en Netlify Functions básicas.
 // Usaremos el endpoint REST directamente para evitar dependencias complejas en la función serverless básica.
-const fetch = require('node-fetch'); // Netlify Functions lo soporta o puedes usar el 'https` module nativo de Node.js
+// Ya NO necesitamos la siguiente línea, porque 'fetch' debería estar disponible globalmente:
+//const fetch = require('node-fetch'); // Netlify Functions lo soporta o puedes usar el 'https` module nativo de Node.js
 
 exports.handler = async function(event, context) {
     // 1. Obtener los datos enviados desde el frontend (app.js)
