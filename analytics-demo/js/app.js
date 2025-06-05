@@ -246,66 +246,92 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function generateDescriptiveSummary(type, xVals, yVals, xColName, yColName, catColName, valColName, distColName, dataSetForSummary) { /* ... (tu código completo para generateDescriptiveSummary - considera aplicar las mejoras de formato aquí) ... */
-        let summary = "No se pudo generar un resumen detallado.";
-        if (type === 'trend') {
-            if (!yVals || yVals.length === 0) return "No hay datos Y para el resumen de tendencia.";
-            let numericY = yVals.map(v => parseFloat(v)).filter(v => !isNaN(v));
-            if (numericY.length === 0) return `La columna '${yColName}' no contiene datos numéricos para el resumen.`;
-            let maxY = -Infinity, minY = Infinity;
-            let maxXassociated = null, minXassociated = null;
-            for (let i = 0; i < yVals.length; i++) {
-                const currentY = parseFloat(yVals[i]);
-                if (!isNaN(currentY)) {
-                    if (currentY > maxY) { maxY = currentY; maxXassociated = xVals[i]; }
-                    if (currentY < minY) { minY = currentY; minXassociated = xVals[i]; }
-                }
+    function generateDescriptiveSummary(type, xVals, yVals, xColName, yColName, catColName, valColName, distColName, dataSetForSummary) {
+    let summaryHTML = "No se pudo generar un resumen detallado."; // Cambiado a summaryHTML
+
+    if (type === 'trend') {
+        if (!yVals || yVals.length === 0) return "No hay datos Y para el resumen de tendencia.";
+        let numericY = yVals.map(v => parseFloat(v)).filter(v => !isNaN(v));
+        if (numericY.length === 0) return `La columna '<strong>${yColName}</strong>' no contiene datos numéricos para el resumen.`;
+
+        let maxY = -Infinity, minY = Infinity;
+        let maxXassociated = null, minXassociated = null;
+        for (let i = 0; i < yVals.length; i++) {
+            const currentY = parseFloat(yVals[i]);
+            if (!isNaN(currentY)) {
+                if (currentY > maxY) { maxY = currentY; maxXassociated = xVals[i]; }
+                if (currentY < minY) { minY = currentY; minXassociated = xVals[i]; }
             }
-            summary = `Análisis de tendencia para <strong>'${yColName}'</strong> por <strong>'${xColName}'</strong>:<br>`;
-            summary += `&bull; Valor más alto observado: <strong>${maxY.toLocaleString()}</strong>`;
-            if (maxXassociated !== null) summary += ` (en '${xColName}' = ${maxXassociated})`;
-            summary += `<br>&bull; Valor más bajo observado: <strong>${minY.toLocaleString()}</strong>`;
-            if (minXassociated !== null) summary += ` (en '${xColName}' = ${minXassociated})`;
-            summary += ".";
-            if (numericY.length > 1) {
-                const firstVal = numericY[0]; const lastVal = numericY[numericY.length - 1];
-                summary += "<br><em>";
-                if (lastVal > firstVal) summary += "En general, se observa una tendencia al alza.";
-                else if (lastVal < firstVal) summary += "En general, se observa una tendencia a la baja.";
-                else summary += "En general, no se observa una clara tendencia ascendente o descendente en los extremos.";
-                summary += "</em>";
-            }
-            return summary;
-        } else if (type === 'comparison') {
-            if (!yVals || yVals.length === 0) return "No hay datos de valor para el resumen de comparación.";
-            let numericY = yVals.map(v => parseFloat(v)).filter(v => !isNaN(v));
-            if (numericY.length === 0) return `La columna '${valColName}' no contiene datos numéricos para el resumen.`;
-            let maxY = -Infinity, minY = Infinity;
-            let maxCatAssociated = null, minCatAssociated = null;
-            for (let i = 0; i < numericY.length; i++) {
-                const currentY = numericY[i];
-                if (currentY > maxY) { maxY = currentY; maxCatAssociated = xVals[i]; }
-                if (currentY < minY) { minY = currentY; minCatAssociated = xVals[i]; }
-            }
-            summary = `Comparación de <strong>'${valColName}'</strong> por <strong>'${catColName}'</strong>:<br>`;
-            summary += `&bull; Categoría con valor más alto (<strong>${maxCatAssociated}</strong>): <strong>${maxY.toLocaleString()}</strong><br>`;
-            summary += `&bull; Categoría con valor más bajo (<strong>${minCatAssociated}</strong>): <strong>${minY.toLocaleString()}</strong>.`;
-            return summary;
-        } else if (type === 'distribution') {
-            if (!xVals || xVals.length === 0) return "No hay datos para el resumen de distribución.";
-            let numericX = xVals.map(v => parseFloat(v)).filter(v => !isNaN(v));
-            if (numericX.length === 0) return `La columna '${distColName}' no contiene datos numéricos para el resumen.`;
-            let sum = numericX.reduce((a, b) => a + b, 0);
-            let mean = sum / numericX.length;
-            let minVal = Math.min(...numericX);
-            let maxVal = Math.max(...numericX);
-            summary = `Distribución de <strong>'${distColName}'</strong>:<br>`;
-            summary += `&bull; Los valores varían entre <strong>${minVal.toLocaleString()}</strong> y <strong>${maxVal.toLocaleString()}</strong>.<br>`;
-            summary += `&bull; El promedio es <strong>${mean.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</strong>.`;
-            return summary;
         }
-        return "Resumen descriptivo no disponible para este tipo de análisis.";
+        summaryHTML = `Análisis de tendencia para <strong>'${yColName}'</strong> por <strong>'${xColName}'</strong>:<br>`;
+        summaryHTML += `&bull; Valor más alto observado: <strong>${maxY.toLocaleString()}</strong>`;
+        if (maxXassociated !== null) summaryHTML += ` (cuando '${xColName}' fue <em>${maxXassociated}</em>)`;
+        summaryHTML += `<br>&bull; Valor más bajo observado: <strong>${minY.toLocaleString()}</strong>`;
+        if (minXassociated !== null) summaryHTML += ` (cuando '${xColName}' fue <em>${minXassociated}</em>)`;
+        
+        if (numericY.length > 1) {
+            const firstVal = numericY[0]; const lastVal = numericY[numericY.length - 1];
+            summaryHTML += "<br><em>Conclusión general:</em> ";
+            if (lastVal > firstVal) summaryHTML += "Se observa una <strong>tendencia al alza</strong> general.";
+            else if (lastVal < firstVal) summaryHTML += "Se observa una <strong>tendencia a la baja</strong> general.";
+            else summaryHTML += "No se observa una clara tendencia ascendente o descendente entre el primer y último punto.";
+        }
+        return summaryHTML;
+
+    } else if (type === 'comparison') {
+        if (!yVals || yVals.length === 0) return "No hay datos de valor para el resumen de comparación.";
+        let numericY = yVals.map(v => parseFloat(v)).filter(v => !isNaN(v));
+        if (numericY.length === 0) return `La columna '<strong>${valColName}</strong>' no contiene datos numéricos para el resumen.`;
+
+        let maxY = -Infinity, minY = Infinity;
+        let maxCatAssociated = null, minCatAssociated = null;
+        // Asegurarse de que xVals (categorías) tenga la misma longitud que numericY
+        const validCategories = xVals.slice(0, numericY.length); 
+
+        for (let i = 0; i < numericY.length; i++) {
+            const currentY = numericY[i];
+            if (currentY > maxY) { maxY = currentY; maxCatAssociated = validCategories[i]; }
+            if (currentY < minY) { minY = currentY; minCatAssociated = validCategories[i]; }
+        }
+        summaryHTML = `Comparación de <strong>'${valColName}'</strong> por <strong>'${catColName}'</strong>:<br>`;
+        if (maxCatAssociated) {
+            summaryHTML += `&bull; Categoría con el valor más alto (<strong>${maxCatAssociated}</strong>): <strong>${maxY.toLocaleString()}</strong>.<br>`;
+        } else {
+            summaryHTML += `&bull; No se pudo determinar la categoría con el valor más alto.<br>`;
+        }
+        if (minCatAssociated) {
+            summaryHTML += `&bull; Categoría con el valor más bajo (<strong>${minCatAssociated}</strong>): <strong>${minY.toLocaleString()}</strong>.`;
+        } else {
+            summaryHTML += `&bull; No se pudo determinar la categoría con el valor más bajo.`;
+        }
+        return summaryHTML;
+
+    } else if (type === 'distribution') {
+        if (!xVals || xVals.length === 0) return "No hay datos para el resumen de distribución.";
+        let numericX = xVals.map(v => parseFloat(v)).filter(v => !isNaN(v));
+        if (numericX.length === 0) return `La columna '<strong>${distColName}</strong>' no contiene datos numéricos para el resumen.`;
+
+        let sum = numericX.reduce((a, b) => a + b, 0);
+        let mean = sum / numericX.length;
+        let minVal = Math.min(...numericX);
+        let maxVal = Math.max(...numericX);
+        numericX.sort((a, b) => a - b); // Ordenar para la mediana
+        let median;
+        const mid = Math.floor(numericX.length / 2);
+        if (numericX.length % 2 === 0) {
+            median = (numericX[mid - 1] + numericX[mid]) / 2;
+        } else {
+            median = numericX[mid];
+        }
+
+        summaryHTML = `Distribución de <strong>'${distColName}'</strong>:<br>`;
+        summaryHTML += `&bull; Rango de valores: de <strong>${minVal.toLocaleString()}</strong> a <strong>${maxVal.toLocaleString()}</strong>.<br>`;
+        summaryHTML += `&bull; Promedio (Media): <strong>${mean.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</strong>.<br>`;
+        summaryHTML += `&bull; Mediana: <strong>${median.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</strong>.`;
+        return summaryHTML;
     }
+    return summaryHTML; // Devuelve el mensaje por defecto si el tipo no coincide
+}
 
     function resetFileSelection() { /* ... (tu código completo para resetFileSelection) ... */
         if(fileLoadedStatus) fileLoadedStatus.style.display = 'none';
