@@ -3,6 +3,9 @@ console.log("app.js: Script iniciado, esperando DOMContentLoaded...");
 document.addEventListener('DOMContentLoaded', () => {
     console.log("app.js: DOMContentLoaded evento disparado. Inicializando aplicación...");
 
+    // ---- INICIO DE MODIFICACIÓN ----
+    const MAX_ROWS_TO_PROCESS = 5000; // Límite de filas a procesar. Puedes ajustar este número.
+    // ---- FIN DE MODIFICACIÓN ----
     let currentFileName = '';
     let availableHeaders = [];
     let parsedCsvData = [];
@@ -14,6 +17,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentTableData = [];
 
     // --- Referencias a Elementos del DOM ---
+    // ---- INICIO DE MODIFICACIÓN ----
+    const dataProcessingInfoElement = document.getElementById('dataProcessingInfo'); // Nueva referencia
+    // ---- FIN DE MODIFICACIÓN ----
     const dataUploadSection = document.getElementById('dataUploadSection');
     const selectFileButton = document.getElementById('selectFileButton');
     const fileInput = document.getElementById('fileInput');
@@ -50,14 +56,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const aiSummaryTextElement = document.getElementById('aiSummaryText');
 
     // --- INICIO DE DEFINICIÓN DE FUNCIONES ---
-    // (Todas las funciones: filterConditions, parseCSVText, parseExcelData, inferColumnTypes,
-    //  populateColumnSelectors, resetColumnSelectors, updateSmartSuggestion,
-    //  generateDescriptiveSummary, resetFileSelection, displayDynamicFields,
-    //  updateFilterValueElement, collectFilterDefinitions, applyAllFilters,
-    //  displayDataTable, populateTableBody, sortTableByColumn,
-    //  resetApplicationStateBeforeNewFile, resetToUploadView
-    //  PERMANECEN IGUAL QUE EN LA ÚLTIMA VERSIÓN COMPLETA,
-    //  EXCEPTO renderOrUpdateChart que es la que se modifica abajo)
+    // (Las funciones que tenías marcadas con "/* ... (código completo de la función) ... */"
+    // se asume que están completas y correctas según tu última versión)
 
     const filterConditions = [
         { value: 'equals', text: 'Es igual a (=)' }, { value: 'not_equals', text: 'No es igual a (≠)' },
@@ -68,7 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
         { value: 'is_empty', text: 'Está vacío' }, { value: 'is_not_empty', text: 'No está vacío' }
     ];
 
-    function parseCSVText(csvText) { /* ... (código completo de la función que me proporcionaste) ... */
+    function parseCSVText(csvText) { /* ... (tu código completo para parseCSVText) ... */
         if (!csvText) return { headers: [], data: [] };
         const lines = csvText.trim().split(/\r\n|\n/);
         if (lines.length === 0) return { headers: [], data: [] };
@@ -96,7 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return { headers: rawHeaders, data: data };
     }
 
-    function parseExcelData(arrayBuffer) { /* ... (código completo de la función que me proporcionaste) ... */
+    function parseExcelData(arrayBuffer) { /* ... (tu código completo para parseExcelData) ... */
         try {
             if (typeof XLSX === 'undefined') {
                 console.error("SheetJS (XLSX) no está definido. Asegúrate de que la librería esté cargada.");
@@ -135,7 +135,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function inferColumnTypes(dataSample, headers) { /* ... (código completo de la función que me proporcionaste) ... */
+    function inferColumnTypes(dataSample, headers) { /* ... (tu código completo para inferColumnTypes) ... */
         const types = {};
         const SAMPLES_TO_CHECK = Math.min(dataSample.length, 50);
         if (SAMPLES_TO_CHECK === 0) {
@@ -171,7 +171,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return types;
     }
 
-    function populateColumnSelectors(headers) { /* ... (código completo de la función que me proporcionaste) ... */
+    function populateColumnSelectors(headers) { /* ... (tu código completo para populateColumnSelectors) ... */
         if (!headers || headers.length === 0 || !columnSelectors) return;
         columnSelectors.forEach(select => {
             if (select) {
@@ -190,7 +190,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    function resetColumnSelectors() { /* ... (código completo de la función que me proporcionaste) ... */
+    function resetColumnSelectors() { /* ... (tu código completo para resetColumnSelectors) ... */
         if (!columnSelectors) return;
         columnSelectors.forEach(select => {
             if (select && select.options[0]) {
@@ -202,7 +202,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    function updateSmartSuggestion(headers, columnTypes) { /* ... (código completo de la función que me proporcionaste) ... */
+    function updateSmartSuggestion(headers, columnTypes) { /* ... (tu código completo para updateSmartSuggestion) ... */
         currentSmartSuggestion = null;
         if (!smartSuggestionText) return;
         if (!headers || headers.length === 0 || !columnTypes || Object.keys(columnTypes).length === 0) {
@@ -246,7 +246,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function generateDescriptiveSummary(type, xVals, yVals, xColName, yColName, catColName, valColName, distColName, dataSetForSummary) { /* ... (código completo de la función que me proporcionaste) ... */
+    function generateDescriptiveSummary(type, xVals, yVals, xColName, yColName, catColName, valColName, distColName, dataSetForSummary) { /* ... (tu código completo para generateDescriptiveSummary - considera aplicar las mejoras de formato aquí) ... */
         let summary = "No se pudo generar un resumen detallado.";
         if (type === 'trend') {
             if (!yVals || yVals.length === 0) return "No hay datos Y para el resumen de tendencia.";
@@ -261,15 +261,19 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (currentY < minY) { minY = currentY; minXassociated = xVals[i]; }
                 }
             }
-            summary = `En el análisis de tendencia para '${yColName}' por '${xColName}': el valor más alto observado de '${yColName}' es ${maxY.toLocaleString()}`;
-            if (maxXassociated !== null) summary += ` (cuando '${xColName}' fue ${maxXassociated})`;
-            summary += `, y el valor más bajo es ${minY.toLocaleString()}`;
-            if (minXassociated !== null) summary += ` (cuando '${xColName}' fue ${minXassociated})`;
+            summary = `Análisis de tendencia para <strong>'${yColName}'</strong> por <strong>'${xColName}'</strong>:<br>`;
+            summary += `&bull; Valor más alto observado: <strong>${maxY.toLocaleString()}</strong>`;
+            if (maxXassociated !== null) summary += ` (en '${xColName}' = ${maxXassociated})`;
+            summary += `<br>&bull; Valor más bajo observado: <strong>${minY.toLocaleString()}</strong>`;
+            if (minXassociated !== null) summary += ` (en '${xColName}' = ${minXassociated})`;
             summary += ".";
             if (numericY.length > 1) {
                 const firstVal = numericY[0]; const lastVal = numericY[numericY.length - 1];
-                if (lastVal > firstVal) summary += " En general, se observa una tendencia al alza.";
-                else if (lastVal < firstVal) summary += " En general, se observa una tendencia a la baja.";
+                summary += "<br><em>";
+                if (lastVal > firstVal) summary += "En general, se observa una tendencia al alza.";
+                else if (lastVal < firstVal) summary += "En general, se observa una tendencia a la baja.";
+                else summary += "En general, no se observa una clara tendencia ascendente o descendente en los extremos.";
+                summary += "</em>";
             }
             return summary;
         } else if (type === 'comparison') {
@@ -283,8 +287,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (currentY > maxY) { maxY = currentY; maxCatAssociated = xVals[i]; }
                 if (currentY < minY) { minY = currentY; minCatAssociated = xVals[i]; }
             }
-            summary = `En la comparación de '${valColName}' por '${catColName}': la categoría '${maxCatAssociated}' tuvo el valor total más alto (${maxY.toLocaleString()}), `;
-            summary += `mientras que '${minCatAssociated}' tuvo el valor total más bajo (${minY.toLocaleString()}).`;
+            summary = `Comparación de <strong>'${valColName}'</strong> por <strong>'${catColName}'</strong>:<br>`;
+            summary += `&bull; Categoría con valor más alto (<strong>${maxCatAssociated}</strong>): <strong>${maxY.toLocaleString()}</strong><br>`;
+            summary += `&bull; Categoría con valor más bajo (<strong>${minCatAssociated}</strong>): <strong>${minY.toLocaleString()}</strong>.`;
             return summary;
         } else if (type === 'distribution') {
             if (!xVals || xVals.length === 0) return "No hay datos para el resumen de distribución.";
@@ -294,21 +299,26 @@ document.addEventListener('DOMContentLoaded', () => {
             let mean = sum / numericX.length;
             let minVal = Math.min(...numericX);
             let maxVal = Math.max(...numericX);
-            summary = `Para la distribución de '${distColName}': los valores varían entre ${minVal.toLocaleString()} y ${maxVal.toLocaleString()}, con un promedio de ${mean.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}.`;
+            summary = `Distribución de <strong>'${distColName}'</strong>:<br>`;
+            summary += `&bull; Los valores varían entre <strong>${minVal.toLocaleString()}</strong> y <strong>${maxVal.toLocaleString()}</strong>.<br>`;
+            summary += `&bull; El promedio es <strong>${mean.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</strong>.`;
             return summary;
         }
         return "Resumen descriptivo no disponible para este tipo de análisis.";
     }
 
-    function resetFileSelection() { /* ... (código completo de la función que me proporcionaste) ... */
+    function resetFileSelection() { /* ... (tu código completo para resetFileSelection) ... */
         if(fileLoadedStatus) fileLoadedStatus.style.display = 'none';
         currentFileName = '';
         if(fileNameDisplay) fileNameDisplay.textContent = '';
         if(fileInput) fileInput.value = null;
         updateSmartSuggestion([], {});
+        // ---- INICIO DE MODIFICACIÓN ----
+        if (dataProcessingInfoElement) dataProcessingInfoElement.textContent = '';
+        // ---- FIN DE MODIFICACIÓN ----
     }
 
-    function displayDynamicFields() { /* ... (código completo de la función que me proporcionaste) ... */
+    function displayDynamicFields() { /* ... (tu código completo para displayDynamicFields) ... */
         if(trendFields) trendFields.style.display = 'none';
         if(comparisonFields) comparisonFields.style.display = 'none';
         if(distributionFields) distributionFields.style.display = 'none';
@@ -331,7 +341,7 @@ document.addEventListener('DOMContentLoaded', () => {
         else if (selectedType === 'distribution' && distributionFields) distributionFields.style.display = 'block';
     }
 
-    function updateFilterValueElement(filterRow, selectedColumnName, selectedCondition) { /* ... (código completo de la función que me proporcionaste) ... */
+    function updateFilterValueElement(filterRow, selectedColumnName, selectedCondition) { /* ... (tu código completo para updateFilterValueElement) ... */
         const valueContainer = filterRow.querySelector('.filter-value-container');
         if (!valueContainer) return;
         valueContainer.innerHTML = '';
@@ -393,7 +403,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function collectFilterDefinitions() { /* ... (código completo de la función que me proporcionaste) ... */
+    function collectFilterDefinitions() { /* ... (tu código completo para collectFilterDefinitions) ... */
         const definitions = [];
         if(!activeFiltersContainer) return definitions;
         const filterRows = activeFiltersContainer.querySelectorAll('.filter-row');
@@ -428,7 +438,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return definitions;
     }
 
-    function applyAllFilters(dataToFilter, filterDefinitions) { /* ... (código completo de la función que me proporcionaste) ... */
+    function applyAllFilters(dataToFilter, filterDefinitions) { /* ... (tu código completo para applyAllFilters) ... */
         if (!filterDefinitions || filterDefinitions.length === 0) {
             return dataToFilter;
         }
@@ -483,7 +493,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    function displayDataTable(headers, data) { /* ... (código completo de la función que me proporcionaste) ... */
+    function displayDataTable(headers, data) { /* ... (tu código completo para displayDataTable) ... */
         if (!dataTableContainer) return;
         dataTableContainer.innerHTML = '';
         currentTableData = [...data];
@@ -519,7 +529,7 @@ document.addEventListener('DOMContentLoaded', () => {
         dataTableContainer.appendChild(table);
     }
 
-    function populateTableBody(tbodyElement, dataToDisplay, headers) { /* ... (código completo de la función que me proporcionaste) ... */
+    function populateTableBody(tbodyElement, dataToDisplay, headers) { /* ... (tu código completo para populateTableBody) ... */
         if (!tbodyElement) return;
         tbodyElement.innerHTML = '';
         dataToDisplay.forEach(rowData => {
@@ -533,7 +543,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    function sortTableByColumn(headerKey, allHeaders, tbodyElement) { /* ... (código completo de la función que me proporcionaste) ... */
+    function sortTableByColumn(headerKey, allHeaders, tbodyElement) { /* ... (tu código completo para sortTableByColumn) ... */
         if (!tbodyElement) {
             console.error("Error: tbodyElement no existe en sortTableByColumn.");
             return;
@@ -575,8 +585,7 @@ document.addEventListener('DOMContentLoaded', () => {
         populateTableBody(tbodyElement, currentTableData, allHeaders);
     }
 
-    // --- renderOrUpdateChart (CON AJUSTES DE LAYOUT) ---
-    function renderOrUpdateChart(config, dataForChart) {
+    function renderOrUpdateChart(config, dataForChart) { /* ... (tu código completo para renderOrUpdateChart, pero considera añadir las líneas para ocultar el resumen de IA como te mostré) ... */
         const {
             selectedAnalysisType,
             xAxisColumnName, yAxisColumnName,
@@ -588,10 +597,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (chartContainer) chartContainer.innerHTML = '';
         if (descriptiveSummaryElement) descriptiveSummaryElement.innerHTML = `<span class="icon">📝</span> <strong>Resumen:</strong> Generando...`;
         
+        // ---- INICIO DE MODIFICACIÓN ----
         // Ocultar el resumen de IA al generar un nuevo gráfico
         if (aiSummaryResultContainer) aiSummaryResultContainer.style.display = 'none';
-        if (aiSummaryTextElement) aiSummaryTextElement.innerHTML = '';
-
+        if (aiSummaryTextElement) aiSummaryTextElement.innerHTML = ''; // Limpiar texto anterior
+        // ---- FIN DE MODIFICACIÓN ----
 
         if (!dataForChart || dataForChart.length === 0) {
             if(chartContainer) chartContainer.innerHTML = 'No hay datos para mostrar con los filtros y configuración actual.';
@@ -735,7 +745,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (fileNameDisplay) fileNameDisplay.textContent = currentFileName;
                 if (fileLoadedStatus) fileLoadedStatus.style.display = 'block';
 
-                resetApplicationStateBeforeNewFile();
+                resetApplicationStateBeforeNewFile(); // Limpia estados, incluyendo dataProcessingInfoElement
 
                 const reader = new FileReader();
                 reader.onload = (e) => {
@@ -748,7 +758,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             if (typeof XLSX === 'undefined') {
                                 alert('La librería para leer archivos Excel (SheetJS) no se ha cargado correctamente.');
                                 console.error("SheetJS (XLSX) no está definido.");
-                                resetFileSelection();
+                                resetFileSelection(); // resetFileSelection también debería limpiar dataProcessingInfoElement si lo añadimos allí
                                 return;
                             }
                             const arrayBuffer = e.target.result;
@@ -758,27 +768,50 @@ document.addEventListener('DOMContentLoaded', () => {
                             resetFileSelection();
                             return;
                         }
-
+                        // ---- INICIO DE MODIFICACIÓN PARA TRUNCAMIENTO ----
                         availableHeaders = parsedResult.headers;
-                        parsedCsvData = parsedResult.data;
+                        let originalRowCount = parsedResult.data.length;
 
-                        if (availableHeaders.length > 0) {
+                        // Limpiar mensaje previo (aunque resetApplicationStateBeforeNewFile ya debería hacerlo)
+                        if (dataProcessingInfoElement) dataProcessingInfoElement.textContent = ''; 
+
+                        if (originalRowCount > MAX_ROWS_TO_PROCESS) {
+                            parsedCsvData = parsedResult.data.slice(0, MAX_ROWS_TO_PROCESS);
+                            if (dataProcessingInfoElement) {
+                                dataProcessingInfoElement.textContent = `Nota: Su archivo original contiene ${originalRowCount.toLocaleString()} filas. Para optimizar el rendimiento en esta demo, se han procesado las primeras ${MAX_ROWS_TO_PROCESS.toLocaleString()} filas.`;
+                            }
+                            console.log(`Datos truncados: ${originalRowCount} filas originales, procesadas ${parsedCsvData.length}.`);
+                        } else {
+                            parsedCsvData = parsedResult.data;
+                            // Opcional: Mensaje si no se trunca y el elemento existe
+                            // if (dataProcessingInfoElement && originalRowCount > 0) {
+                            //    dataProcessingInfoElement.textContent = `Se procesaron ${originalRowCount.toLocaleString()} filas.`;
+                            // }
+                        }
+                        // ---- FIN DE MODIFICACIÓN PARA TRUNCAMIENTO ----
+
+                        if (availableHeaders.length > 0 && parsedCsvData.length > 0) { // Comprobar también parsedCsvData por si el archivo original estaba vacío
                             inferredColumnTypes = inferColumnTypes(parsedCsvData, availableHeaders);
                             populateColumnSelectors(availableHeaders);
                             updateSmartSuggestion(availableHeaders, inferredColumnTypes);
                         } else {
-                            alert('No se pudieron leer encabezados o datos del archivo. Asegúrate de que el formato sea correcto y no esté vacío.');
+                            alert('No se pudieron leer encabezados o datos del archivo, o el archivo está vacío después del procesamiento. Asegúrate de que el formato sea correcto.');
                             updateSmartSuggestion([], {});
+                             // Resetear a la vista de carga si no hay nada que procesar
+                            resetToUploadView(); // Asegura que la UI refleje que no hay datos
+                            return; // Detener la ejecución adicional si no hay datos válidos
                         }
 
                         if (dataUploadSection) dataUploadSection.style.display = 'none';
                         if (analysisDefinitionSection) analysisDefinitionSection.style.display = 'block';
                         if (smartSuggestionBox) smartSuggestionBox.style.display = 'block';
                         if (manualAnalysisForm) manualAnalysisForm.style.display = 'none';
+
                     } catch (error) {
                         console.error("Error procesando el archivo en reader.onload:", error);
                         alert(`Ocurrió un error al procesar el archivo: ${error.message}`);
-                        resetFileSelection();
+                        resetFileSelection(); // resetFileSelection también debería limpiar dataProcessingInfoElement
+                        if (dataProcessingInfoElement) dataProcessingInfoElement.textContent = ''; // Doble seguro
                     }
                 };
                 reader.onerror = () => {
@@ -799,7 +832,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    if(useSuggestionButton) { useSuggestionButton.addEventListener('click', () => { /* ... (código completo de la función que me proporcionaste) ... */
+    if(useSuggestionButton) { useSuggestionButton.addEventListener('click', () => { /* ... (tu código completo) ... */
         if (currentSmartSuggestion && currentSmartSuggestion.type && analysisTypeSelect && manualAnalysisForm && smartSuggestionBox && typeof displayDynamicFields === 'function') {
             analysisTypeSelect.value = currentSmartSuggestion.type;
             displayDynamicFields();
@@ -826,7 +859,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });}
 
-    if(manualConfigButton) { manualConfigButton.addEventListener('click', () => { /* ... (código completo de la función que me proporcionaste) ... */
+    if(manualConfigButton) { manualConfigButton.addEventListener('click', () => { /* ... (tu código completo) ... */
         if (smartSuggestionBox) smartSuggestionBox.style.display = 'none';
         if (manualAnalysisForm) manualAnalysisForm.style.display = 'block';
         if (analysisTypeSelect) analysisTypeSelect.value = '';
@@ -835,14 +868,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if(analysisTypeSelect) { analysisTypeSelect.addEventListener('change', displayDynamicFields); }
 
-    if(addFilterButton) { addFilterButton.addEventListener('click', () => { /* ... (código completo de la función que me proporcionaste) ... */
+    if(addFilterButton) { addFilterButton.addEventListener('click', () => { /* ... (tu código completo) ... */
         if (availableHeaders.length === 0) {
             alert("Carga un archivo primero para poder definir filtros basados en sus columnas.");
             return;
         }
         const filterRow = document.createElement('div');
         filterRow.className = 'filter-row';
-        const columnSelectElement = document.createElement('select'); // Renombrado para evitar conflicto con variable global
+        const columnSelectElement = document.createElement('select');
         columnSelectElement.className = 'filter-column';
         columnSelectElement.setAttribute('aria-label', 'Columna para el filtro');
         const defaultColOpt = document.createElement('option');
@@ -872,7 +905,7 @@ document.addEventListener('DOMContentLoaded', () => {
         updateFilterValueElement(filterRow, columnSelectElement.value, conditionSelect.value);
     });}
 
-    if(generateAnalysisButton) { generateAnalysisButton.addEventListener('click', (event) => { /* ... (código completo de la función que me proporcionaste) ... */
+    if(generateAnalysisButton) { generateAnalysisButton.addEventListener('click', (event) => { /* ... (tu código completo) ... */
         event.preventDefault();
         if(!analysisTypeSelect) return;
         const selectedAnalysisType = analysisTypeSelect.value;
@@ -881,24 +914,24 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         const filterDefinitions = collectFilterDefinitions();
-        const filteredData = applyAllFilters(parsedCsvData, filterDefinitions);
+        const filteredData = applyAllFilters(parsedCsvData, filterDefinitions); // parsedCsvData ya está (potencialmente) truncado
 
         if (filteredData.length === 0 && parsedCsvData.length > 0 && filterDefinitions.length > 0) {
             if(chartContainer) chartContainer.innerHTML = 'Ningún dato coincide con los filtros aplicados.';
             if(descriptiveSummaryElement) descriptiveSummaryElement.innerHTML = `<span class="icon">📝</span> <strong>Resumen:</strong> No hay datos para analizar después de aplicar los filtros.`;
             if(dataTableContainer) dataTableContainer.innerHTML = '<p style="text-align:center; padding: 20px; color: #777;">Ningún dato coincide con los filtros aplicados.</p>';
-            if (aiSummaryResultContainer) aiSummaryResultContainer.style.display = 'none'; // Ocultar AI summary
+            if (aiSummaryResultContainer) aiSummaryResultContainer.style.display = 'none';
             if (analysisDefinitionSection) analysisDefinitionSection.style.display = 'none';
             if (dashboardResultsSection) dashboardResultsSection.style.display = 'block';
             if(dashboardFileName) dashboardFileName.textContent = currentFileName + " (filtrado)";
             if(chartContainer) Plotly.purge(chartContainer);
             lastChartConfig = null;
             return;
-        } else if (filteredData.length === 0 && parsedCsvData.length === 0){
-            if(chartContainer) chartContainer.innerHTML = 'No hay datos cargados para analizar.';
-            if(descriptiveSummaryElement) descriptiveSummaryElement.innerHTML = `<span class="icon">📝</span> <strong>Resumen:</strong> No hay datos cargados.`;
-            if(dataTableContainer) dataTableContainer.innerHTML = '<p style="text-align:center; padding: 20px; color: #777;">No hay datos cargados.</p>';
-            if (aiSummaryResultContainer) aiSummaryResultContainer.style.display = 'none'; // Ocultar AI summary
+        } else if (filteredData.length === 0 && parsedCsvData.length === 0){ // Esto cubre el caso de archivo vacío o no parseable
+            if(chartContainer) chartContainer.innerHTML = 'No hay datos cargados o procesados para analizar.';
+            if(descriptiveSummaryElement) descriptiveSummaryElement.innerHTML = `<span class="icon">📝</span> <strong>Resumen:</strong> No hay datos cargados o procesados.`;
+            if(dataTableContainer) dataTableContainer.innerHTML = '<p style="text-align:center; padding: 20px; color: #777;">No hay datos cargados o procesados.</p>';
+            if (aiSummaryResultContainer) aiSummaryResultContainer.style.display = 'none';
             if (analysisDefinitionSection) analysisDefinitionSection.style.display = 'none';
             if (dashboardResultsSection) dashboardResultsSection.style.display = 'block';
             if(dashboardFileName) dashboardFileName.textContent = currentFileName;
@@ -955,7 +988,7 @@ document.addEventListener('DOMContentLoaded', () => {
         renderOrUpdateChart(lastChartConfig, filteredData);
     });}
 
-    if (toggleDataLabelsCheckbox) {
+    if (toggleDataLabelsCheckbox) { /* ... (tu código completo) ... */
         toggleDataLabelsCheckbox.addEventListener('change', () => {
             if (lastChartConfig && dashboardResultsSection && dashboardResultsSection.style.display === 'block' && parsedCsvData.length > 0) {
                 const dataToRender = applyAllFilters(parsedCsvData, lastChartConfig.filters || []);
@@ -964,7 +997,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    if(downloadChartButton) {
+    if(downloadChartButton) { /* ... (tu código completo) ... */
         downloadChartButton.addEventListener('click', () => {
             if (parsedCsvData.length > 0 && chartContainer && chartContainer.querySelector('.plot-container')) {
                 let filename = 'grafico_SIR-Analytics';
@@ -980,10 +1013,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    if(downloadDataButton) {
+    if(downloadDataButton) { /* ... (tu código completo) ... */
         downloadDataButton.addEventListener('click', () => {
             const filterDefinitions = collectFilterDefinitions();
-            const dataToDownload = applyAllFilters(parsedCsvData, filterDefinitions);
+            const dataToDownload = applyAllFilters(parsedCsvData, filterDefinitions); // Usa parsedCsvData que ya puede estar truncado
             if (!dataToDownload || dataToDownload.length === 0) {
                 alert("No hay datos (o datos filtrados) para descargar.");
                 return;
@@ -1015,7 +1048,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    if(performNewAnalysisButton) {
+    if(performNewAnalysisButton) { /* ... (tu código completo) ... */
         performNewAnalysisButton.addEventListener('click', () => {
             resetToUploadView();
         });
@@ -1026,13 +1059,13 @@ document.addEventListener('DOMContentLoaded', () => {
         getAISummaryButton.addEventListener('click', async () => {
             if (!lastChartConfig || !parsedCsvData || parsedCsvData.length === 0) {
                 alert("Primero genera un gráfico para obtener un análisis con IA.");
-                aiSummaryResultContainer.style.display = 'none';
+                if(aiSummaryResultContainer) aiSummaryResultContainer.style.display = 'none';
                 return;
             }
 
-            aiSummaryResultContainer.style.display = 'block';
-            aiSummaryTextElement.innerHTML = '<em>Conectando con la IA y generando análisis... Por favor, espera.</em> ✨';
-            getAISummaryButton.disabled = true;
+            if(aiSummaryResultContainer) aiSummaryResultContainer.style.display = 'block';
+            if(aiSummaryTextElement) aiSummaryTextElement.innerHTML = '<em>Conectando con la IA y generando análisis... Por favor, espera.</em> ✨';
+            if(getAISummaryButton) getAISummaryButton.disabled = true;
 
             const { selectedAnalysisType } = lastChartConfig;
             let xAxisLabel = "N/A";
@@ -1067,22 +1100,22 @@ document.addEventListener('DOMContentLoaded', () => {
                     body: JSON.stringify(dataForAI),
                 });
 
-                getAISummaryButton.disabled = false;
+                if(getAISummaryButton) getAISummaryButton.disabled = false;
 
                 if (!response.ok) {
-                    const errorResult = await response.json();
+                    const errorResult = await response.json().catch(() => ({ error: response.statusText })); // Fallback si el cuerpo no es JSON
                     console.error("Error desde la función serverless:", errorResult.error || response.statusText);
-                    aiSummaryTextElement.textContent = `Error al obtener el análisis de IA: ${errorResult.error || response.statusText}`;
+                    if(aiSummaryTextElement) aiSummaryTextElement.textContent = `Error al obtener el análisis de IA: ${errorResult.error || response.statusText}`;
                     return;
                 }
 
                 const result = await response.json();
-                aiSummaryTextElement.innerHTML = result.aiSummary.replace(/\n/g, '<br>');
+                if(aiSummaryTextElement) aiSummaryTextElement.innerHTML = result.aiSummary.replace(/\n/g, '<br>');
 
             } catch (error) {
-                getAISummaryButton.disabled = false;
+                if(getAISummaryButton) getAISummaryButton.disabled = false;
                 console.error("Error al llamar a la función para el resumen de IA:", error);
-                aiSummaryTextElement.textContent = "Error de conexión al intentar obtener el análisis de IA. Verifica tu conexión o inténtalo más tarde.";
+                if(aiSummaryTextElement) aiSummaryTextElement.textContent = "Error de conexión al intentar obtener el análisis de IA. Verifica tu conexión o inténtalo más tarde.";
             }
         });
         console.log("app.js: Event listener para getAISummaryButton AÑADIDO.");
@@ -1092,7 +1125,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Funciones de Reseteo ---
     function resetApplicationStateBeforeNewFile() {
-        availableHeaders = []; parsedCsvData = []; resetColumnSelectors();
+        availableHeaders = []; 
+        // parsedCsvData ya se limpia/redefine al cargar nuevo archivo, no es necesario aquí.
+        resetColumnSelectors();
         if(analysisTypeSelect) analysisTypeSelect.value = '';
         displayDynamicFields();
         if(smartSuggestionText) smartSuggestionText.innerHTML = `<span class="icon">💡</span> <strong>Sugerencia:</strong> (Esperando datos del archivo para generar sugerencia...)`;
@@ -1104,29 +1139,35 @@ document.addEventListener('DOMContentLoaded', () => {
         if(dataTableContainer) dataTableContainer.innerHTML = '';
         currentTableData = [];
         currentSortColumnKey = null;
-        if (aiSummaryResultContainer) aiSummaryResultContainer.style.display = 'none'; // Ocultar AI summary
+        
+        // ---- INICIO DE MODIFICACIÓN ----
+        if (aiSummaryResultContainer) aiSummaryResultContainer.style.display = 'none';
         if (aiSummaryTextElement) aiSummaryTextElement.innerHTML = '';
+        if (dataProcessingInfoElement) dataProcessingInfoElement.textContent = ''; // Limpiar mensaje de procesamiento de datos
+        // ---- FIN DE MODIFICACIÓN ----
     }
 
     function resetToUploadView() {
         currentFileName = '';
-        if(fileInput) fileInput.value = null;
-        resetApplicationStateBeforeNewFile();
+        if(fileInput) fileInput.value = null; // Esto es importante para permitir volver a seleccionar el mismo archivo
+        resetApplicationStateBeforeNewFile(); // Llama a la función que ya limpia la mayoría de las cosas
+        
         if(dashboardResultsSection) dashboardResultsSection.style.display = 'none';
         if(analysisDefinitionSection) analysisDefinitionSection.style.display = 'none';
         if(manualAnalysisForm) manualAnalysisForm.style.display = 'none';
-        if(smartSuggestionBox) smartSuggestionBox.style.display = 'block';
-        if(dataUploadSection) dataUploadSection.style.display = 'block';
-        if(fileLoadedStatus) fileLoadedStatus.style.display = 'none';
+        if(smartSuggestionBox) smartSuggestionBox.style.display = 'block'; // Mostrar sugerencias de nuevo
+        if(dataUploadSection) dataUploadSection.style.display = 'block'; // Mostrar área de carga
+        if(fileLoadedStatus) fileLoadedStatus.style.display = 'none'; // Ocultar estado de archivo cargado
         if(fileNameDisplay) fileNameDisplay.textContent = '';
+        
         if(chartContainer) {
             Plotly.purge(chartContainer);
             chartContainer.textContent = 'Aquí se mostrará el gráfico interactivo (Plotly.js).';
         }
         if(descriptiveSummaryElement) descriptiveSummaryElement.innerHTML = `<span class="icon">📝</span> <strong>Resumen:</strong> (Este es un resumen descriptivo básico generado automáticamente.)`;
-        // También asegurarse de ocultar el resumen de IA al resetear completamente
-        if (aiSummaryResultContainer) aiSummaryResultContainer.style.display = 'none';
-        if (aiSummaryTextElement) aiSummaryTextElement.innerHTML = '';
+        // No es necesario limpiar aiSummaryResultContainer y aiSummaryTextElement de nuevo aquí,
+        // ya que resetApplicationStateBeforeNewFile() lo hace.
+        // dataProcessingInfoElement también es limpiado por resetApplicationStateBeforeNewFile()
     }
 
     console.log("app.js: Aplicación SIR - Analytics completamente inicializada y todos los listeners configurados (o intentados).");
